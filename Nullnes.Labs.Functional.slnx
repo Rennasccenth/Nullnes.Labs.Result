@@ -1,0 +1,13 @@
+﻿<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Packages.props" />
+    <File Path="Directory.Build.props" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src\Nullnes.Labs.Result\Nullnes.Labs.Result.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests\Nullnes.Labs.Result.Tests\Nullnes.Labs.Result.Tests.csproj" Type="Classic C#" />
+  </Folder>
+</Solution>
