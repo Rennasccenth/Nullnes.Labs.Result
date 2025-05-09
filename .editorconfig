@@ -1,0 +1,168 @@
+# noinspection EditorConfigKeyCorrectness
+[*]
+charset = utf-8
+end_of_line = lf
+trim_trailing_whitespace = false
+insert_final_newline = false
+indent_style = space
+indent_size = 4
+
+# Code Style
+csharp_style_namespace_declarations=file_scoped:warning
+csharp_style_prefer_utf8_string_literals = true:suggestion
+csharp_style_var_elsewhere = false:refactoring
+csharp_style_var_for_built_in_types = false:refactoring
+csharp_style_var_when_type_is_apparent = true:refactoring
+
+dotnet_style_parentheses_in_arithmetic_binary_operators = never_if_unnecessary:none
+dotnet_style_parentheses_in_other_binary_operators = always_for_clarity:none
+dotnet_style_parentheses_in_relational_binary_operators = never_if_unnecessary:none
+dotnet_style_predefined_type_for_locals_parameters_members = true:suggestion
+dotnet_style_predefined_type_for_member_access = true:suggestion
+dotnet_style_qualification_for_event = false:suggestion
+dotnet_style_qualification_for_field = false:suggestion
+dotnet_style_qualification_for_method = false:suggestion
+dotnet_style_qualification_for_property = false:suggestion
+dotnet_style_require_accessibility_modifiers = for_non_interface_members:error
+
+
+# Allowed values for the severity: none, silent, suggestion, warning, error
+# none => Disables the rule.
+# silent => Don't flag anything but still enable the tooltip in case the user call for it.
+# suggestion => Flag the use case but don't flag any build errors or warnings.
+# warning => Flag the use case an also flag a warning.
+# error => Flag the use case as error, disallowing the build.
+
+# <- Analyzers ->
+
+# -> CA: Code Analysis Rules 
+# --> Some of them are very opinionated and vary depending on the type of project. They can be useful when building frameworks or libraries, but not so much for a general purpose.]
+dotnet_diagnostic.CA2007.severity = silent # Consider calling ConfigureAwait on the awaited task [Only useful for building libraries (https://devblogs.microsoft.com/dotnet/configureawait-faq/#ive-heard-configureawaitfalse-is-no-longer-necessary-in-net-core-true)]
+dotnet_diagnostic.CA1812.severity = silent # Avoid uninstantiated internal classes [Many classes are instantiated by using reflection and not by hand]
+dotnet_diagnostic.CA1062.severity = none # Validate parameter as non-null before using it [we are do already enforce nullable nowadays, also EF Migrations generate a bunch of those]
+dotnet_diagnostic.CA1848.severity = silent # Consider use the LogMessage instead ILogger<T> method [This is faster indeed, but non necessary for most cases, see: https://dev.to/flatrick/ca1848-high-performance-logging-in-net-framework-48-and-net-50-3l25]
+dotnet_diagnostic.CA1031.severity = silent # Catch specific Exceptions instead broad one (e.g. Exception)
+dotnet_diagnostic.CA1515.severity = suggestion # Ensure that the disposable fields are properly disposed.
+dotnet_diagnostic.CA2234.severity = none # Pass System.Uri objects instead of strings. [If the method accepts a string, it can internally convert to a URI] 
+dotnet_diagnostic.CA2225.severity = none # Operator overloads have named alternates
+
+# -> Sonar Rules
+dotnet_diagnostic.S3216.severity = none # Consider calling ConfigureAwait on the awaited task.
+dotnet_diagnostic.S1118.severity = silent # Utility classes should not have public constructors. 
+dotnet_diagnostic.S3903.severity = none # Consider moving classes to their own namespace
+dotnet_diagnostic.S125.severity = none
+
+# -> IDE (Visual Studio) Rules
+dotnet_diagnostic.IDE0161.severity = silent # Use collection expressions instead of explicit instantiation.
+dotnet_diagnostic.IDE0008.severity = none # Use explicit type instead 'var'. [This one is already enforced by ReSharper SuggestVarOrType_SimpleTypes]
+
+# -> Resharper
+resharper_arrange_redundant_parentheses_highlighting = hint
+resharper_arrange_this_qualifier_highlighting = hint
+resharper_arrange_type_member_modifiers_highlighting = hint
+resharper_arrange_type_modifiers_highlighting = hint
+resharper_built_in_type_reference_style_for_member_access_highlighting = hint
+resharper_built_in_type_reference_style_highlighting = hint
+resharper_possible_unintended_linear_search_in_set_highlighting = suggestion
+resharper_possible_unintended_queryable_as_enumerable_highlighting = hint
+resharper_razor_assembly_not_resolved_highlighting = warning
+resharper_redundant_base_qualifier_highlighting = warning
+resharper_suggest_var_or_type_built_in_types_highlighting = hint
+resharper_suggest_var_or_type_elsewhere_highlighting = hint
+resharper_suggest_var_or_type_simple_types_highlighting = hint
+resharper_web_config_module_not_resolved_highlighting = warning
+resharper_web_config_type_not_resolved_highlighting = warning
+resharper_web_config_wrong_module_highlighting = warning
+resharper_autodetect_indent_settings = true
+resharper_formatter_off_tag = @formatter:off
+resharper_formatter_on_tag = @formatter:on
+resharper_formatter_tags_enabled = true
+resharper_use_indent_from_vs = false
+
+
+# Test specific rules
+# noinspection EditorConfigKeyCorrectness
+[/tests/**/**.cs]
+dotnet_diagnostic.CA1707.severity = none # Identifiers should not contain underscores [It's okay for test methods to have _'s]
+dotnet_diagnostic.CA1305.severity = none # Specify IFormatProvider [By using xunit3, we can define the default current culture in xunit.runner.json]
+dotnet_diagnostic.IDE0062.severity = none
+
+[{*.yaml,*.yml}]
+indent_size = 2
+
+# Naming rules
+dotnet_naming_rule.types_and_namespaces_should_be_pascalcase.severity = suggestion
+dotnet_naming_rule.types_and_namespaces_should_be_pascalcase.symbols = types_and_namespaces
+dotnet_naming_rule.types_and_namespaces_should_be_pascalcase.style = pascalcase
+
+dotnet_naming_rule.interfaces_should_be_ipascalcase.severity = suggestion
+dotnet_naming_rule.interfaces_should_be_ipascalcase.symbols = interfaces
+dotnet_naming_rule.interfaces_should_be_ipascalcase.style = ipascalcase
+
+dotnet_naming_rule.type_parameters_should_be_tpascalcase.severity = suggestion
+dotnet_naming_rule.type_parameters_should_be_tpascalcase.symbols = type_parameters
+dotnet_naming_rule.type_parameters_should_be_tpascalcase.style = tpascalcase
+
+dotnet_naming_rule.methods_should_be_pascalcase.severity = suggestion
+dotnet_naming_rule.methods_should_be_pascalcase.symbols = methods
+dotnet_naming_rule.methods_should_be_pascalcase.style = pascalcase
+
+dotnet_naming_rule.properties_should_be_pascalcase.severity = suggestion
+dotnet_naming_rule.properties_should_be_pascalcase.symbols = properties
+dotnet_naming_rule.properties_should_be_pascalcase.style = pascalcase
+
+dotnet_naming_rule.events_should_be_pascalcase.severity = suggestion
+dotnet_naming_rule.events_should_be_pascalcase.symbols = events
+dotnet_naming_rule.events_should_be_pascalcase.style = pascalcase
+
+dotnet_naming_rule.local_variables_should_be_camelcase.severity = suggestion
+dotnet_naming_rule.local_variables_should_be_camelcase.symbols = local_variables
+dotnet_naming_rule.local_variables_should_be_camelcase.style = camelcase
+
+dotnet_naming_rule.local_constants_should_be_camelcase.severity = suggestion
+dotnet_naming_rule.local_constants_should_be_camelcase.symbols = local_constants
+dotnet_naming_rule.local_constants_should_be_camelcase.style = camelcase
+
+dotnet_naming_rule.parameters_should_be_camelcase.severity = suggestion
+dotnet_naming_rule.parameters_should_be_camelcase.symbols = parameters
+dotnet_naming_rule.parameters_should_be_camelcase.style = camelcase
+
+dotnet_naming_rule.public_fields_should_be_pascalcase.severity = suggestion
+dotnet_naming_rule.public_fields_should_be_pascalcase.symbols = public_fields
+dotnet_naming_rule.public_fields_should_be_pascalcase.style = pascalcase
+
+dotnet_naming_rule.private_fields_should_be__camelcase.severity = suggestion
+dotnet_naming_rule.private_fields_should_be__camelcase.symbols = private_fields
+dotnet_naming_rule.private_fields_should_be__camelcase.style = _camelcase
+
+dotnet_naming_rule.private_static_fields_should_be_s_camelcase.severity = suggestion
+dotnet_naming_rule.private_static_fields_should_be_s_camelcase.symbols = private_static_fields
+dotnet_naming_rule.private_static_fields_should_be_s_camelcase.style = s_camelcase
+
+dotnet_naming_rule.public_constant_fields_should_be_pascalcase.severity = suggestion
+dotnet_naming_rule.public_constant_fields_should_be_pascalcase.symbols = public_constant_fields
+dotnet_naming_rule.public_constant_fields_should_be_pascalcase.style = pascalcase
+
+dotnet_naming_rule.private_constant_fields_should_be_pascalcase.severity = suggestion
+dotnet_naming_rule.private_constant_fields_should_be_pascalcase.symbols = private_constant_fields
+dotnet_naming_rule.private_constant_fields_should_be_pascalcase.style = pascalcase
+
+dotnet_naming_rule.public_static_readonly_fields_should_be_pascalcase.severity = suggestion
+dotnet_naming_rule.public_static_readonly_fields_should_be_pascalcase.symbols = public_static_readonly_fields
+dotnet_naming_rule.public_static_readonly_fields_should_be_pascalcase.style = pascalcase
+
+dotnet_naming_rule.private_static_readonly_fields_should_be_pascalcase.severity = suggestion
+dotnet_naming_rule.private_static_readonly_fields_should_be_pascalcase.symbols = private_static_readonly_fields
+dotnet_naming_rule.private_static_readonly_fields_should_be_pascalcase.style = pascalcase
+
+dotnet_naming_rule.enums_should_be_pascalcase.severity = suggestion
+dotnet_naming_rule.enums_should_be_pascalcase.symbols = enums
+dotnet_naming_rule.enums_should_be_pascalcase.style = pascalcase
+
+dotnet_naming_rule.local_functions_should_be_pascalcase.severity = suggestion
+dotnet_naming_rule.local_functions_should_be_pascalcase.symbols = local_functions
+dotnet_naming_rule.local_functions_should_be_pascalcase.style = pascalcase
+
+dotnet_naming_rule.non_field_members_should_be_pascalcase.severity = suggestion
+dotnet_naming_rule.non_field_members_should_be_pascalcase.symbols = non_field_members
+dotnet_naming_rule.non_field_members_should_be_pascalcase.style = pascalcase
