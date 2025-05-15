@@ -1,6 +1,7 @@
 using System.Diagnostics.Contracts;
+using Nullnes.Labs.Result.Abstractions;
 
-namespace Nullnes.Labs.Result.Results;
+namespace Nullnes.Labs.Result;
 
 /// <summary>
 /// Represents a result that can either be a success containing a value of type <typeparamref name="TSuccess"/>
@@ -8,7 +9,8 @@ namespace Nullnes.Labs.Result.Results;
 /// </summary>
 /// <typeparam name="TSuccess">The type of the success value.</typeparam>
 /// <typeparam name="TError">The type of the error value.</typeparam>
-public record Result<TSuccess, TError>
+public sealed record Result<TSuccess, TError> 
+    where TError : class, IError
 {
     private readonly TSuccess? _successValue;
     private readonly TError? _error;
@@ -19,27 +21,27 @@ public record Result<TSuccess, TError>
         : throw new InvalidOperationException("The result is not a Success");
 
     [Pure]
-    protected TError Error => IsFailure 
+    private TError Error => IsFailure 
         ? _error!
         : throw new InvalidOperationException("The result is a Success, not an Error");
 
     /// <summary>
     /// Gets a value indicating whether the result represents a success.
     /// </summary>
-    protected bool IsSuccess { get; }
+    private bool IsSuccess { get; }
 
     /// <summary>
     /// Gets a value indicating whether the result represents a failure.
     /// </summary>
-    protected bool IsFailure => !IsSuccess;
+    private bool IsFailure => !IsSuccess;
 
-    protected Result(TError error)
+    private Result(TError error)
     { 
         _error = error;
         IsSuccess = false;
     }
 
-    protected Result(TSuccess successData)
+    private Result(TSuccess successData)
     {
         if (successData is TError)
         {
@@ -69,27 +71,28 @@ public record Result<TSuccess, TError>
     [Pure]
     public static implicit operator Result<TSuccess, TError>(TError error) => Failure(error);
 
-    [Pure] public override string? ToString() => IsSuccess ? Value?.ToString() : Error?.ToString();
+    [Pure] public override string? ToString() => IsSuccess ? Value?.ToString() : ((Object?)Error)?.ToString();
+
+    # region Bind
+    [Pure]
+    public Result<TOutput, TError> Bind<TOutput>(Func<TSuccess, Result<TOutput, TError>> binder)
+        => IsSuccess ? binder(Value) : Result<TOutput, TError>.Failure(Error);
 
     [Pure]
-    public Result<TSuccess, TError> Bind(Func<TSuccess, Result<TSuccess, TError>> onSuccess)
-        => IsFailure 
-            ? Error 
-            : onSuccess(Value);
+    public Result<TOutput, TError> Bind<TOutput>(Func<Result<TOutput, TError>> binder)
+        => IsSuccess ? binder() : Result<TOutput, TError>.Failure(Error); 
 
-    // [Pure]
-    // public Result<TSuccess, TError> Bind(Func<Result<TSuccess, TError>> onSuccessAction)
-    //     => IsFailure 
-    //         ? Error 
-    //         : onSuccessAction();
-    
     [Pure]
-    public Task<Result<TSuccess, TError>> Bind(Func<TSuccess, Task<Result<TSuccess, TError>>> onSuccess)
-        => IsFailure 
-            ? Task.FromResult<Result<TSuccess, TError>>(Error) 
-            : onSuccess(Value);
+    public Task<Result<TOutput, TError>> Bind<TOutput>(Func<TSuccess, Task<Result<TOutput, TError>>> asyncBinder)
+        => IsSuccess ? asyncBinder(Value) : Task.FromResult(Result<TOutput, TError>.Failure(Error));
 
-    // Match Section [USING Success Value]
+    [Pure]
+    public Task<Result<TOutput, TError>> Bind<TOutput>(Func<Task<Result<TOutput, TError>>> asyncBinder)
+        => IsSuccess ? asyncBinder() : Task.FromResult(Result<TOutput, TError>.Failure(Error));
+
+    # endregion
+
+    # region Match
     [Pure]
     public TOutput Match<TOutput>(
         Func<TSuccess, TOutput> onSuccess,
@@ -121,8 +124,7 @@ public record Result<TSuccess, TError>
         IsSuccess
             ? onSuccessAsync(Value) 
             : onErrorAsync(Error);
-    
-    // Match Section [USING Success Value]
+
     [Pure]
     public TOutput Match<TOutput>(
         Func<TOutput> onSuccess,
@@ -154,54 +156,60 @@ public record Result<TSuccess, TError>
         IsSuccess
             ? onSuccessAsync() 
             : onErrorAsync(Error);
-    
-    // Map Section [USING Success Value]
+    # endregion
+
+    # region Map
     [Pure]
-    public Result<TOutput, TError> Map<TOutput>(
-        Func<TSuccess, TOutput> mapping)
-    {
-        if (IsFailure) return Error;
-        return mapping(Value);
-    }
+    public Result<TOutput, TError> Map<TOutput>(Func<TSuccess, TOutput> mapper) =>
+        IsSuccess
+            ? Result<TOutput, TError>.Success(mapper(Value)) 
+            : Result<TOutput, TError>.Failure(Error);
 
     [Pure]
-    public async Task<Result<TOutput, TError>> Map<TOutput>(
-        Func<TSuccess, Task<TOutput>> asynchronousMapping)
-    {
-        if (IsFailure) return Error;
-        return await asynchronousMapping(Value);
-    }
+    public async Task<Result<TOutput, TError>> Map<TOutput>(Func<TSuccess, Task<TOutput>> asyncMapper)
+        => IsSuccess
+            ? Result<TOutput, TError>.Success(await asyncMapper(Value)) 
+            : Result<TOutput, TError>.Failure(Error);
+    # endregion
 
-    // Map Section [NOT USING Success Value]
-    [Pure]
-    public Result<TOutput, TError> Map<TOutput>(
-        Func<TOutput> mapping)
+    # region Map Error
+    public Result<TSuccess, TNewError> MapError<TNewError>(Func<TError, TNewError> errorMapper) where TNewError : class, IError
     {
-        if (IsFailure) return Error;
-        return mapping();
+        return IsSuccess 
+            ? Result<TSuccess, TNewError>.Success(Value) 
+            : Result<TSuccess, TNewError>.Failure(errorMapper(Error));
     }
-    [Pure]
-    public async Task<Result<TOutput, TError>> Map<TOutput>(
-        Func<Task<TOutput>> asynchronousMapping)
-    {
-        if (IsFailure) return Error;
-        return await asynchronousMapping();
-    }
+    # endregion
 
-    // Tap Section
+    # region OnSuccess
     [Pure]
-    public Result<TSuccess, TError> Tap(Action<TSuccess> callable)
+    public Result<TSuccess, TError> OnSuccess(Action<TSuccess> callable)
     {
-        if (IsFailure) return Error;
-        callable(Value);
+        if (IsSuccess) callable(Value);
         return this;
     }
 
     [Pure]
-    public Result<TSuccess, TError> Tap(Action callable)
+    public Result<TSuccess, TError> OnSuccess(Action callable)
     {
-        if (IsFailure) return Error;
-        callable();
+        if (IsSuccess) callable();
         return this;
     }
+    # endregion
+
+    # region OnFailure
+    [Pure]
+    public Result<TSuccess, TError> OnFailure(Action<TError> callable)
+    {
+        if (IsFailure) callable(Error);
+        return this;
+    }
+
+    [Pure]
+    public Result<TSuccess, TError> OnFailure(Action callable)
+    {
+        if (IsFailure) callable();
+        return this;
+    }
+    # endregion
 }
