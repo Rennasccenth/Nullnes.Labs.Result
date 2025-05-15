@@ -4,10 +4,23 @@
         <TargetFramework>netstandard2.1</TargetFramework>
         <Nullable>enable</Nullable>
         <LangVersion>default</LangVersion>
+
+<!--    Package Configurations -->
+        <Version>0.0.1</Version>
+        <PackageId>Nullnes.Labs.Result</PackageId>
+        <Description>This is a opinionated but somewhat flexible ROP(Railway Oriented Programming) monadic Result, lean
+            and simple to allow you to focus on your business logic and not on error handling capabilities.</Description>
+        <PackageProjectUrl>https://github.com/Rennasccenth/nullnes.result</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/Rennasccenth/nullnes.result</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <Authors>Felipe Nunes</Authors>
+        <Company>Nullnes.Labs</Company>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageTags>Result; Railway Oriented Programming; ROP; Error Handling; Monadic</PackageTags>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Nullnes.Labs.Result.Abstractions\Nullnes.Labs.Result.Abstractions.csproj" />
+      <PackageReference Include="Nullnes.Labs.Result.Abstractions" />
     </ItemGroup>
 
 </Project>
