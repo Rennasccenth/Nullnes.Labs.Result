@@ -212,4 +212,40 @@ public sealed record Result<TSuccess, TError>
         return this;
     }
     # endregion
+
+    # region Ensure
+    [Pure]
+    public Result<TSuccess, TError> Ensure(
+        Func<TSuccess, bool> predicate,
+        Func<TError, TError> errorMapper)
+    {
+        if (IsFailure) return Failure(Error);
+        return predicate(Value) 
+            ? this // Doesn't affect the current flow.
+            : Failure(errorMapper(Error)); // Fails by mapping the current error into a new one.
+    }
+
+    [Pure]
+    public Result<TSuccess, TError> Ensure(
+        Func<TSuccess, bool> predicate,
+        Func<TError> errorFactory)
+    {
+        if (IsFailure) return Failure(Error);
+        return predicate(Value)
+            ? this // Doesn't affect the current flow.
+            : Failure(errorFactory()); // Fails by creating the new error.
+    }
+
+    [Pure]
+    public Result<TSuccess, TError> Ensure(
+        Func<TSuccess, bool> predicate,
+        TError errorInstance)
+    {
+        if (IsFailure) return Failure(Error);
+        return predicate(Value)
+            ? this // Doesn't affect the current flow.
+            : Failure(errorInstance); // Fails by using a given error.
+    }
+
+    # endregion
 }

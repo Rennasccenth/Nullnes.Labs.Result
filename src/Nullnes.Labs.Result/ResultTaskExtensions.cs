@@ -190,4 +190,37 @@ public static class ResultTaskExtensions
         return awaitedResult.OnFailure(action);
     }
     # endregion
+    
+    # region Ensure
+    [Pure]
+    public static async Task<Result<TSuccess, TError>> Ensure<TSuccess, TError>(
+        this Task<Result<TSuccess, TError>> resultTask,
+        Func<TSuccess, bool> predicate,
+        Func<TError, TError> errorMapper) where TError : class, IError
+    {
+        Result<TSuccess, TError> awaitedResult = await resultTask;
+        return awaitedResult.Ensure(predicate, errorMapper);
+    }
+
+    [Pure]
+    public static async Task<Result<TSuccess, TError>> Ensure<TSuccess, TError>(
+        this Task<Result<TSuccess, TError>> resultTask,
+        Func<TSuccess, bool> predicate,
+        Func<TError> errorFactory) where TError : class, IError
+    {
+        Result<TSuccess, TError> awaitedResult = await resultTask;
+        return awaitedResult.Ensure(predicate, errorFactory);
+    }
+
+    [Pure]
+    public static async Task<Result<TSuccess, TError>> Ensure<TSuccess, TError>(
+        this Task<Result<TSuccess, TError>> resultTask,
+        Func<TSuccess, bool> predicate,
+        TError errorInstance) where TError : class, IError
+    {
+        Result<TSuccess, TError> awaitedResult = await resultTask;
+        return awaitedResult.Ensure(predicate, errorInstance);
+    }
+
+    # endregion
 }
