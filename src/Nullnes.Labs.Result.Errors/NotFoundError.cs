@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Nullnes.Labs.Result.Results.Errors;
+namespace Nullnes.Labs.Result.Errors;
 
 public sealed record NotFoundError : BaseError
 {
@@ -32,7 +32,7 @@ public sealed record NotFoundError : BaseError
         }
     }
 
-    private string CustomMessage { get; init; } = string.Empty;
+    private string CustomMessage { get; } = string.Empty;
     private ResourceName? ResourceName { get; }
     private ResourceIdentifier? ResourceIdentifier { get; }
     

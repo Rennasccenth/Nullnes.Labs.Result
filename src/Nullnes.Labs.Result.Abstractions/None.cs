@@ -1,4 +1,4 @@
-namespace Nullnes.Labs.Result.Results;
+namespace Nullnes.Labs.Result.Abstractions;
 
 /// <summary>
 /// Represents a no meaningful value. It's often refereed as Unit, () or empty on some functional programming languages. 

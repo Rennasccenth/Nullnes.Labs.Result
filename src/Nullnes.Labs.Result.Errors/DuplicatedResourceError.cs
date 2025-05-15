@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Nullnes.Labs.Result.Results.Errors;
+namespace Nullnes.Labs.Result.Errors;
 
 public sealed record DuplicatedResourceError : BaseError
 {

@@ -1,6 +1,8 @@
-namespace Nullnes.Labs.Result.Results.Errors;
+using Nullnes.Labs.Result.Abstractions;
 
-public abstract record BaseError
+namespace Nullnes.Labs.Result.Errors;
+
+public abstract record BaseError : IError
 {
     public abstract string Type { get; }
     public abstract string Message { get; }
@@ -27,7 +29,7 @@ public abstract record BaseError
     public static NotFoundError NotFoundError(string message)
         => new(message);
     public static NotFoundError NotFoundError(ResourceName resourceName)
-        => new(resourceName);
+        => new((string)resourceName);
     public static NotFoundError NotFoundError(ResourceName resourceName, ResourceIdentifier resourceIdentifier)
         => new(resourceName, resourceIdentifier);
 
@@ -64,7 +66,7 @@ public readonly struct ResourceName
     public static implicit operator string(ResourceName resourceName) => resourceName.Value;
     public static implicit operator ResourceName(string value) => FromString(value);
 
-    public static ResourceName FromString(string value) => new(value);
+    private static ResourceName FromString(string value) => new(value);
 }
 
 public readonly struct ResourceIdentifier
