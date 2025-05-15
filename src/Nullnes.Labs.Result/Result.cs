@@ -218,12 +218,12 @@ public sealed record Result<TSuccess, TError>
     [Pure]
     public Result<TSuccess, TError> Ensure(
         Func<TSuccess, bool> predicate,
-        Func<TError> errorFactory)
+        Func<TSuccess, TError> errorFactory)
     {
         if (IsFailure) return Failure(Error);
         return predicate(Value)
             ? this // Doesn't affect the current flow.
-            : Failure(errorFactory()); // Fails by creating the new error.
+            : Failure(errorFactory(Value)); // Fails by creating the new error based on the evaluated value.
     }
 
     [Pure]
@@ -236,6 +236,5 @@ public sealed record Result<TSuccess, TError>
             ? this // Doesn't affect the current flow.
             : Failure(errorInstance); // Fails by using a given error.
     }
-
-    # endregion
+    #endregion
 }
