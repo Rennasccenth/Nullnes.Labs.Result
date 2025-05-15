@@ -71,7 +71,7 @@ public sealed record Result<TSuccess, TError>
     [Pure]
     public static implicit operator Result<TSuccess, TError>(TError error) => Failure(error);
 
-    [Pure] public override string? ToString() => IsSuccess ? Value?.ToString() : ((Object?)Error)?.ToString();
+    [Pure] public override string? ToString() => IsSuccess ? Value?.ToString() : Error.ToString();
 
     # region Bind
     [Pure]
