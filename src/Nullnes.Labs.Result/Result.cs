@@ -75,18 +75,33 @@ public sealed record Result<TSuccess, TError>
 
     # region Bind
     [Pure]
+    public Result<TSuccess, TError> Bind(Func<TSuccess, Result<TSuccess, TError>> binder) 
+        => IsSuccess ? binder(Value) : this;
+
+    [Pure]
     public Result<TOutput, TError> Bind<TOutput>(Func<TSuccess, Result<TOutput, TError>> binder)
         => IsSuccess ? binder(Value) : Result<TOutput, TError>.Failure(Error);
+
+    [Pure]
+    public Result<TSuccess, TError> Bind(Func<Result<TSuccess, TError>> binder) => 
+        IsSuccess ? binder() : this; 
 
     [Pure]
     public Result<TOutput, TError> Bind<TOutput>(Func<Result<TOutput, TError>> binder)
         => IsSuccess ? binder() : Result<TOutput, TError>.Failure(Error); 
 
     [Pure]
+    public Task<Result<TSuccess, TError>> Bind(Func<TSuccess, Task<Result<TSuccess, TError>>> asyncBinder)
+        => IsSuccess ? asyncBinder(Value) : Task.FromResult(this);
+
+    [Pure]
     public Task<Result<TOutput, TError>> Bind<TOutput>(Func<TSuccess, Task<Result<TOutput, TError>>> asyncBinder)
         => IsSuccess ? asyncBinder(Value) : Task.FromResult(Result<TOutput, TError>.Failure(Error));
 
     [Pure]
+    public Task<Result<TSuccess, TError>> Bind(Func<Task<Result<TSuccess, TError>>> asyncBinder)
+        => IsSuccess ? asyncBinder() : Task.FromResult(this);
+
     public Task<Result<TOutput, TError>> Bind<TOutput>(Func<Task<Result<TOutput, TError>>> asyncBinder)
         => IsSuccess ? asyncBinder() : Task.FromResult(Result<TOutput, TError>.Failure(Error));
 
@@ -220,7 +235,7 @@ public sealed record Result<TSuccess, TError>
         Func<TSuccess, bool> predicate,
         Func<TSuccess, TError> errorFactory)
     {
-        if (IsFailure) return Failure(Error);
+        if (IsFailure) return this;
         return predicate(Value)
             ? this // Doesn't affect the current flow.
             : Failure(errorFactory(Value)); // Fails by creating the new error based on the evaluated value.
@@ -231,7 +246,7 @@ public sealed record Result<TSuccess, TError>
         Func<TSuccess, bool> predicate,
         TError errorInstance)
     {
-        if (IsFailure) return Failure(Error);
+        if (IsFailure) return this;
         return predicate(Value)
             ? this // Doesn't affect the current flow.
             : Failure(errorInstance); // Fails by using a given error.
