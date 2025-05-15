@@ -214,16 +214,6 @@ public sealed record Result<TSuccess, TError>
     # endregion
 
     # region Ensure
-    [Pure]
-    public Result<TSuccess, TError> Ensure(
-        Func<TSuccess, bool> predicate,
-        Func<TError, TError> errorMapper)
-    {
-        if (IsFailure) return Failure(Error);
-        return predicate(Value) 
-            ? this // Doesn't affect the current flow.
-            : Failure(errorMapper(Error)); // Fails by mapping the current error into a new one.
-    }
 
     [Pure]
     public Result<TSuccess, TError> Ensure(
