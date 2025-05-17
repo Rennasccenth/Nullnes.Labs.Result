@@ -6,7 +6,7 @@
         <LangVersion>default</LangVersion>
 
 <!--    Package Configurations -->
-        <Version>0.0.1</Version>
+        <Version>0.0.2</Version>
         <PackageId>Nullnes.Labs.Result</PackageId>
         <Description>This is a opinionated but somewhat flexible ROP(Railway Oriented Programming) monadic Result, lean
             and simple to allow you to focus on your business logic and not on error handling capabilities.</Description>
@@ -21,6 +21,30 @@
 
     <ItemGroup>
       <PackageReference Include="Nullnes.Labs.Result.Abstractions" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Result.Bind.cs">
+        <DependentUpon>Result.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Result.Match.cs">
+        <DependentUpon>Result.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Result.Map.cs">
+        <DependentUpon>Result.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Result.MapError.cs">
+        <DependentUpon>Result.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Result.Ensure.cs">
+        <DependentUpon>Result.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Result.OnFailure.cs">
+        <DependentUpon>Result.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Result.OnSuccess.cs">
+        <DependentUpon>Result.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>
