@@ -23,4 +23,28 @@
       <PackageReference Include="Nullnes.Labs.Result.Abstractions" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="Result.Bind.cs">
+        <DependentUpon>Result.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Result.Match.cs">
+        <DependentUpon>Result.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Result.Map.cs">
+        <DependentUpon>Result.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Result.MapError.cs">
+        <DependentUpon>Result.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Result.Ensure.cs">
+        <DependentUpon>Result.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Result.OnFailure.cs">
+        <DependentUpon>Result.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Result.OnSuccess.cs">
+        <DependentUpon>Result.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
 </Project>
