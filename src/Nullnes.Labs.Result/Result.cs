@@ -80,7 +80,7 @@ public sealed partial record Result<TSuccess, TError>
 }
 
 /// <summary>
-/// Static non-generic factory for constructing Result{TSuccess,TError}
+/// Static non-generic factory for constructing <see cref="Result{TSuccess, TError}"/> instances.
 /// </summary>
 public static class Result
 {
