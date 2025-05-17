@@ -64,20 +64,20 @@ public static partial class AsyncResultExtensions
     [Pure]
     public static async Task<Result<TOutput, TError>> Bind<TSuccess, TOutput, TError>(
         this Task<Result<TSuccess, TError>> taskResult,
-        Func<Task<Result<TOutput, TError>>> asyncBinder)
-        where TError : class, IError
-    {
-        Result<TSuccess, TError> awaitedResult = await taskResult;
-        return await awaitedResult.Bind(asyncBinder);
-    }
-
-    [Pure]
-    public static async Task<Result<TOutput, TError>> Bind<TSuccess, TOutput, TError>(
-        this Task<Result<TSuccess, TError>> taskResult,
         Func<Result<TOutput, TError>> binder)
         where TError : class, IError
     {
         Result<TSuccess, TError> awaitedResult = await taskResult;
         return awaitedResult.Bind(binder);
+    }
+
+    [Pure]
+    public static async Task<Result<TOutput, TError>> Bind<TSuccess, TOutput, TError>(
+        this Task<Result<TSuccess, TError>> taskResult,
+        Func<Task<Result<TOutput, TError>>> asyncBinder)
+        where TError : class, IError
+    {
+        Result<TSuccess, TError> awaitedResult = await taskResult;
+        return await awaitedResult.Bind(asyncBinder);
     }
 }
