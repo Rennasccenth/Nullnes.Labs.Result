@@ -6,7 +6,7 @@
         <LangVersion>default</LangVersion>
 
 <!--    Package Configurations -->
-        <Version>0.0.2</Version>
+        <Version>0.0.3</Version>
         <PackageId>Nullnes.Labs.Result</PackageId>
         <Description>This is a opinionated but somewhat flexible ROP(Railway Oriented Programming) monadic Result, lean
             and simple to allow you to focus on your business logic and not on error handling capabilities.</Description>
