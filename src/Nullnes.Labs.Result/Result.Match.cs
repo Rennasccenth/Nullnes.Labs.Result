@@ -77,6 +77,17 @@ public static partial class AsyncResultExtensions
     public static async Task<TOutput> Match<TSuccess, TOutput, TError>(
         this Task<Result<TSuccess, TError>> resultTask,
         Func<TSuccess, TOutput> onSuccess,
+        Func<TError, TOutput> onError)
+        where TError : class, IError
+    {
+        Result<TSuccess, TError> awaitedResult = await resultTask;
+        return awaitedResult.Match(onSuccess, onError);
+    }
+
+    [Pure]
+    public static async Task<TOutput> Match<TSuccess, TOutput, TError>(
+        this Task<Result<TSuccess, TError>> resultTask,
+        Func<TSuccess, TOutput> onSuccess,
         Func<TError, Task<TOutput>> onErrorAsync)
         where TError : class, IError
     {
