@@ -74,7 +74,7 @@ public sealed partial record Result<TSuccess, TError>
 public static partial class AsyncResultExtensions
 {
     [Pure]
-    public static async Task<TOutput> Match<TSuccess, TOutput, TError>(
+    public static async Task<TOutput> Match<TSuccess, TError, TOutput>(
         this Task<Result<TSuccess, TError>> resultTask,
         Func<TSuccess, TOutput> onSuccess,
         Func<TError, TOutput> onError)
@@ -85,7 +85,7 @@ public static partial class AsyncResultExtensions
     }
 
     [Pure]
-    public static async Task<TOutput> Match<TSuccess, TOutput, TError>(
+    public static async Task<TOutput> Match<TSuccess, TError, TOutput>(
         this Task<Result<TSuccess, TError>> resultTask,
         Func<TSuccess, TOutput> onSuccess,
         Func<TError, Task<TOutput>> onErrorAsync)
@@ -96,7 +96,7 @@ public static partial class AsyncResultExtensions
     }
 
     [Pure]
-    public static async Task<TOutput> Match<TSuccess, TOutput, TError>(
+    public static async Task<TOutput> Match<TSuccess, TError, TOutput>(
         this Task<Result<TSuccess, TError>> resultTask,
         Func<TSuccess, Task<TOutput>> onSuccessAsync,
         Func<TError, TOutput> onError)
@@ -107,7 +107,7 @@ public static partial class AsyncResultExtensions
     }
 
     [Pure]
-    public static async Task<TOutput> Match<TSuccess, TOutput, TError>(
+    public static async Task<TOutput> Match<TSuccess, TError, TOutput>(
         this Task<Result<TSuccess, TError>> resultTask,
         Func<TSuccess, Task<TOutput>> onSuccessAsync,
         Func<TError, Task<TOutput>> onErrorAsync)
@@ -118,7 +118,7 @@ public static partial class AsyncResultExtensions
     }
 
     [Pure]
-    public static async Task<TOutput> Match<TSuccess, TOutput, TError>(
+    public static async Task<TOutput> Match<TSuccess, TError, TOutput>(
         this Task<Result<TSuccess, TError>> resultTask,
         Func<TOutput> onSuccess,
         Func<TError, TOutput> onError)
@@ -129,7 +129,7 @@ public static partial class AsyncResultExtensions
     }
 
     [Pure]
-    public static async Task<TOutput> Match<TSuccess, TOutput, TError>(
+    public static async Task<TOutput> Match<TSuccess, TError, TOutput>(
         this Task<Result<TSuccess, TError>> resultTask,
         Func<Task<TOutput>> onSuccessAsync,
         Func<TError, TOutput> onError)
@@ -140,7 +140,7 @@ public static partial class AsyncResultExtensions
     }
 
     [Pure]
-    public static async Task<TOutput> Match<TSuccess, TOutput, TError>(
+    public static async Task<TOutput> Match<TSuccess, TError, TOutput>(
         this Task<Result<TSuccess, TError>> resultTask,
         Func<TOutput> onSuccess,
         Func<TError, Task<TOutput>> onErrorAsync)
@@ -151,7 +151,7 @@ public static partial class AsyncResultExtensions
     }
 
     [Pure]
-    public static async Task<TOutput> Match<TSuccess, TOutput, TError>(
+    public static async Task<TOutput> Match<TSuccess, TError, TOutput>(
         this Task<Result<TSuccess, TError>> resultTask,
         Func<Task<TOutput>> onSuccessAsync,
         Func<TError, Task<TOutput>> onErrorAsync)

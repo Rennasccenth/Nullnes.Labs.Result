@@ -35,14 +35,19 @@ public sealed partial record Result<TSuccess, TError>
         => IsSuccess ? asyncBinder() : Task.FromResult(this);
 
     [Pure]
-    public Task<Result<TOutput, TError>> Bind<TOutput>(Func<Task<Result<TOutput, TError>>> asyncBinder)
-        => IsSuccess ? asyncBinder() : Task.FromResult(Result.Failure<TOutput, TError>(Error));
+    public static Task<Result<TOutput, TError>> Bind<TSuccess, TOutput, TError>(
+        this Result<TSuccess, TError> result,
+        Func<Task<Result<TOutput, TError>>> asyncBinder)
+        where TError : class, IError
+        => result.IsSuccess
+            ? asyncBinder()
+            : Task.FromResult(Result.Failure<TOutput, TError>(result.Error));
 }
 
 public static partial class AsyncResultExtensions
 {
     [Pure]
-    public static async Task<Result<TOutput, TError>> Bind<TSuccess, TOutput, TError>(
+    public static async Task<Result<TOutput, TError>> Bind<TSuccess, TError, TOutput>(
         this Task<Result<TSuccess, TError>> resultTask,
         Func<TSuccess, Task<Result<TOutput, TError>>> onSuccess) 
         where TError : class, IError
@@ -52,7 +57,7 @@ public static partial class AsyncResultExtensions
     }
 
     [Pure]
-    public static async Task<Result<TOutput, TError>> Bind<TSuccess, TOutput, TError>(
+    public static async Task<Result<TOutput, TError>> Bind<TSuccess, TError, TOutput>(
         this Task<Result<TSuccess, TError>> taskResult,
         Func<TSuccess, Result<TOutput, TError>> onSuccess)
         where TError : class, IError
@@ -62,7 +67,7 @@ public static partial class AsyncResultExtensions
     }
 
     [Pure]
-    public static async Task<Result<TOutput, TError>> Bind<TSuccess, TOutput, TError>(
+    public static async Task<Result<TOutput, TError>> Bind<TSuccess, TError, TOutput>(
         this Task<Result<TSuccess, TError>> taskResult,
         Func<Result<TOutput, TError>> binder)
         where TError : class, IError
@@ -72,7 +77,7 @@ public static partial class AsyncResultExtensions
     }
 
     [Pure]
-    public static async Task<Result<TOutput, TError>> Bind<TSuccess, TOutput, TError>(
+    public static async Task<Result<TOutput, TError>> Bind<TSuccess, TError, TOutput>(
         this Task<Result<TSuccess, TError>> taskResult,
         Func<Task<Result<TOutput, TError>>> asyncBinder)
         where TError : class, IError
