@@ -170,7 +170,6 @@ public sealed class BindingTests(ITestOutputHelper testOutputHelper)
         int MultiplyBy10(int val) => val * 10;
 
         // Act
-        // AI -> Update this by moving it to the right test file (This one is for BindingTests)
         Result<int, TestError> boundResult = await asynchronousFailedResult.Map(x => MultiplyBy10(x));
 
         string finalResult = boundResult.Match(
@@ -197,7 +196,6 @@ public sealed class BindingTests(ITestOutputHelper testOutputHelper)
         int MultiplyBy10(int val) => val * 10;
 
         // Act
-        // AI -> Update this by moving it to the right test file (This one is for BindingTests)
         var boundResult = await asynchronousSuccessfulResult
             .Map(async x => await Task.FromResult(MultiplyBy10(x)));
 
@@ -251,7 +249,6 @@ public sealed class BindingTests(ITestOutputHelper testOutputHelper)
         Task<Result<int, TestError>> asynchronousFailedResult = Task.FromResult<Result<int, TestError>>(new TestError("This is an Error and not a Success!"));
 
         // Act
-        // AI -> Update this by moving it to the right test file (This one is for BindingTests)
         var boundResult = await asynchronousFailedResult.Map(x => MultiplyBy10(x));
 
         int finalResult = boundResult.Match(
