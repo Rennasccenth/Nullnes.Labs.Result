@@ -1,4 +1,6 @@
 # noinspection EditorConfigKeyCorrectness
+
+
 [*]
 charset = utf-8
 end_of_line = lf
@@ -6,6 +8,9 @@ trim_trailing_whitespace = false
 insert_final_newline = false
 indent_style = space
 indent_size = 4
+
+[{*.yaml,*.yml,*.csproj}]
+indent_size = 2
 
 # Code Style
 csharp_style_namespace_declarations=file_scoped:warning
@@ -86,9 +91,6 @@ resharper_use_indent_from_vs = false
 dotnet_diagnostic.CA1707.severity = none # Identifiers should not contain underscores [It's okay for test methods to have _'s]
 dotnet_diagnostic.CA1305.severity = none # Specify IFormatProvider [By using xunit3, we can define the default current culture in xunit.runner.json]
 dotnet_diagnostic.IDE0062.severity = none
-
-[{*.yaml,*.yml}]
-indent_size = 2
 
 # Naming rules
 dotnet_naming_rule.types_and_namespaces_should_be_pascalcase.severity = suggestion
