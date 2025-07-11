@@ -43,11 +43,11 @@ public sealed class BindTests
         Result<int, TestError> failureResult = expectedError;
 
         // Act
-        Result<string, TestError> finalResult = failureResult.Bind<string>(
+        Result<string, TestError> finalResult = failureResult.Bind(
             successValue =>
             {
                 if (successValue == value)
-                    return successValue.ToString();
+                    return Result.Success<string, TestError>(successValue.ToString());
                 return new TestError("This should never happen, because bind should preserve the previous error.");
             });
 
