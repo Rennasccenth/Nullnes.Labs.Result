@@ -35,7 +35,7 @@ jobs:
       run: dotnet build --no-restore --configuration ${{ env.DOTNET_CONFIGURATION }}
     
     - name: 🚀 Publish Build Artifact 
-      run: dotnet publish --configuration ${{ env.DOTNET_CONFIGURATION }} -o ${{ env.BUILD_OUTPUT_PATH }}
+      run: dotnet publish --no-build --configuration ${{ env.DOTNET_CONFIGURATION }} -o ${{ env.BUILD_OUTPUT_PATH }}
     
     - name: ↗️ Upload Build Artifacts
       uses: actions/upload-artifact@v4
