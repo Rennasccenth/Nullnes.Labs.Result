@@ -11,7 +11,7 @@ env:
   DOTNET_CONFIGURATION: Release
   
   # Testing Variables
-  TESTS_VERBOSITY_LEVEL: detailed
+  TESTS_VERBOSITY_LEVEL: normal
 
   #  Transitive Variables
   BUILD_OUTPUT_NAME: build-artifact
