@@ -33,7 +33,10 @@ public sealed partial record Result<TSuccess, TError>
     [Pure]
     public Task<Result<TSuccess, TError>> Bind(Func<Task<Result<TSuccess, TError>>> asyncBinder)
         => IsSuccess ? asyncBinder() : Task.FromResult(this);
+}
 
+public static class ResultExtensions
+{
     [Pure]
     public static Task<Result<TOutput, TError>> Bind<TSuccess, TOutput, TError>(
         this Result<TSuccess, TError> result,

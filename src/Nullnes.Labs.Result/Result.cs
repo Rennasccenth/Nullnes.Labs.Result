@@ -29,15 +29,15 @@ public sealed partial record Result<TSuccess, TError>
     /// is not a failure.
     /// </summary>
     /// <exception cref="InvalidOperationException">In case the result is not a failure</exception>
-    private TError Error => IsFailure 
+    internal TError Error => IsFailure 
         ? _error!
         : throw new InvalidOperationException("The result is a Success, not an Error");
 
     /// <summary>
     /// Gets a value indicating whether the result represents a success.
     /// </summary>
-    [Pure] 
-    private bool IsSuccess { get; }
+    [Pure]
+    internal bool IsSuccess { get; }
 
     /// <summary>
     /// Gets a value indicating whether the result represents a failure.
