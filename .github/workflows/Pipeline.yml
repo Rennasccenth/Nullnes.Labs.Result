@@ -10,7 +10,10 @@ env:
   DOTNET_VERSION: 9.0.x
   DOTNET_CONFIGURATION: Release
   
-  #  Transitive variables
+  # Testing Variables
+  TESTS_VERBOSITY_LEVEL: detailed
+
+  #  Transitive Variables
   BUILD_OUTPUT_NAME: build-artifact
   BUILD_OUTPUT_PATH: ./output
 
@@ -34,7 +37,7 @@ jobs:
     - name: 🚀 Publish Build Artifact 
       run: dotnet publish --configuration ${{ env.DOTNET_CONFIGURATION }} -o ${{ env.BUILD_OUTPUT_PATH }}
     
-    - name: ↗️ Upload Build Artifact
+    - name: ↗️ Upload Build Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: ${{ env.BUILD_OUTPUT_NAME }}
@@ -51,11 +54,11 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: ↙️ Download Build Artifact
+      - name: ↙️ Download Build Artifacts
         uses: actions/download-artifact@v4
         with:
           name: ${{ env.BUILD_OUTPUT_NAME }}
           path: ${{ env.BUILD_OUTPUT_PATH }}
       
       - name: 🙏🏽 Run Unit Tests
-        run: dotnet test --no-build --configuration ${{ env.DOTNET_CONFIGURATION }} --verbose
+        run: dotnet test --no-build --configuration ${{ env.DOTNET_CONFIGURATION }} --verbosity ${{ env.TESTS_VERBOSITY_LEVEL }}
