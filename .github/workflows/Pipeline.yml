@@ -13,9 +13,6 @@ env:
   # Testing Variables
   TESTS_VERBOSITY_LEVEL: normal
 
-  #  Transitive Variables
-  BUILD_OUTPUT_NAME: build-artifact
-
 jobs:
   Build:
     runs-on: ubuntu-latest
