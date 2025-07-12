@@ -1,0 +1,61 @@
+name: Build Solution
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+env: 
+  DOTNET_VERSION: 9.0.x
+  DOTNET_CONFIGURATION: Release
+  
+  #  Transitive variables
+  BUILD_OUTPUT_NAME: build-artifact
+  BUILD_OUTPUT_PATH: ./output
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: ⚙️ Setup .NET ️
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: 🔎 Restore dependencies
+      run: dotnet restore
+    
+    - name: 🔨 Build
+      run: dotnet build --no-restore --configuration ${{ env.DOTNET_CONFIGURATION }}
+    
+    - name: 🚀 Publish Build Artifact 
+      run: dotnet publish --configuration ${{ env.DOTNET_CONFIGURATION }} -o ${{ env.BUILD_OUTPUT_PATH }}
+    
+    - name: ↗️ Upload Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.BUILD_OUTPUT_NAME }}
+        path: ${{ env.BUILD_OUTPUT_PATH }}
+
+  Tests:
+    runs-on: ubuntu-latest
+    needs: Build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: ⚙️ Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: ↙️ Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.BUILD_OUTPUT_NAME }}
+          path: ${{ env.BUILD_OUTPUT_PATH }}
+      
+      - name: 🙏🏽 Run Unit Tests
+        run: dotnet test --no-build --configuration ${{ env.DOTNET_CONFIGURATION }} --verbose
