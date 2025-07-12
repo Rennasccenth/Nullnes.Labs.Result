@@ -37,7 +37,9 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{ env.BUILD_OUTPUT_NAME }}
-        path: "**/bin/${{ env.DOTNET_CONFIGURATION }}/"
+        path: |
+          **/bin/${{ env.DOTNET_CONFIGURATION }}
+          **/obj/${{ env.DOTNET_CONFIGURATION }}          
 
   Tests:
     runs-on: ubuntu-latest
@@ -54,7 +56,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ env.BUILD_OUTPUT_NAME }}
-          path: "**/bin/${{ env.DOTNET_CONFIGURATION }}/"
+          path: "**/bin/${{ env.DOTNET_CONFIGURATION }}"
       
       - name: 🙏🏽 Run Unit Tests
         run: dotnet test --no-build --configuration ${{ env.DOTNET_CONFIGURATION }} --verbosity ${{ env.TESTS_VERBOSITY_LEVEL }}
