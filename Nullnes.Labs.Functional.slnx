@@ -3,6 +3,7 @@
     <File Path=".editorconfig" />
     <File Path="Directory.Packages.props" />
     <File Path="Directory.Build.props" />
+    <File Path=".github/workflows/build.yml"/>
   </Folder>
   <Folder Name="/src/">
     <Project Path="src\Nullnes.Labs.Result.Abstractions\Nullnes.Labs.Result.Abstractions.csproj" Type="Classic C#" />
