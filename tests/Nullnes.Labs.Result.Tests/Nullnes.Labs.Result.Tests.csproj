@@ -24,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Nullnes.Labs.Result.Abstractions\Nullnes.Labs.Result.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Nullnes.Labs.Result\Nullnes.Labs.Result.csproj" />
   </ItemGroup>
 </Project>
