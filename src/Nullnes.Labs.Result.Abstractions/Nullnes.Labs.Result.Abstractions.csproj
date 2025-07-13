@@ -6,7 +6,6 @@
         <LangVersion>default</LangVersion>
 
 <!--    Package Configurations -->
-        <Version>0.0.1</Version>
         <PackageId>Nullnes.Labs.Result.Abstractions</PackageId>
         <Description>Simple abstractions for Nullnes.Labs.Result.* ecosystem. Might be used to extend it according 
             to your personal needs.</Description>

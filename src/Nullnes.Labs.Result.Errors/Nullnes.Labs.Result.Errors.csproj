@@ -6,7 +6,6 @@
         <LangVersion>default</LangVersion>
 
         <!--    Package Configurations -->
-        <Version>0.0.1</Version>
         <PackageId>Nullnes.Labs.Result.Errors</PackageId>
         <Description>Optional error types for Nullnes.Labs.Result.* ecosystem. Framework agnostic and lean.</Description>
         <PackageProjectUrl>https://github.com/Rennasccenth/nullnes.result</PackageProjectUrl>
