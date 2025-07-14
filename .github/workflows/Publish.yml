@@ -1,7 +1,9 @@
 name: Publish Packages
 
 on:
-  workflow_dispatch: 
+  push: 
+    branches:
+      - feature/publish-into-nuget
 
 env:
   DOTNET_VERSION: 9.0.x
