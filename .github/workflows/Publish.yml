@@ -11,6 +11,9 @@ env:
   
   # Nuget
   
+  # Testing Variables
+  TESTS_VERBOSITY_LEVEL: normal
+  
   # Transient
   BUILD_OUTPUT_NAME: build-name
   NUGET_PACKAGES_FOLDER: './nupkgs'
