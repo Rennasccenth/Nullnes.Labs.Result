@@ -1,10 +1,6 @@
 name: Build Solution
 
-on:
-  push:
-    branches: [ "main", "develop" ]
-  pull_request:
-    branches: [ "main", "develop" ]
+on: [push, pull_request]
 
 env: 
   DOTNET_VERSION: 9.0.x
@@ -32,3 +28,4 @@ jobs:
 
     - name: 🙏🏽 Run Unit Tests
       run: dotnet test --configuration ${{ env.DOTNET_CONFIGURATION }} --verbosity ${{ env.TESTS_VERBOSITY_LEVEL }}
+    
