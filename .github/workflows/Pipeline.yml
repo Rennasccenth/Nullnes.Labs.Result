@@ -5,27 +5,57 @@ on: [push, pull_request]
 env: 
   DOTNET_VERSION: 9.0.x
   DOTNET_CONFIGURATION: Release
-  
+
   # Testing Variables
   TESTS_VERBOSITY_LEVEL: normal
 
+  # Transient
+  BUILD_OUTPUT_NAME: build-name
+
 jobs:
-  Build:
+  build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: ⚙️ Setup .NET ️
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-    
-    - name: 🔎 Restore dependencies
-      run: dotnet restore
-    
-    - name: 🔨 Build
-      run: dotnet build --no-restore --configuration ${{ env.DOTNET_CONFIGURATION }}
+      - uses: actions/checkout@v4
 
-    - name: 🙏🏽 Run Unit Tests
-      run: dotnet test --configuration ${{ env.DOTNET_CONFIGURATION }} --verbosity ${{ env.TESTS_VERBOSITY_LEVEL }}
-    
+      - name: ⚙️ Setup .NET ️
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: 🔎 Restore dependencies
+        run: dotnet restore
+
+      - name: 🔨 Build
+        run: dotnet build --no-restore --configuration ${{ env.DOTNET_CONFIGURATION }}
+
+      - name: 📦 Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.BUILD_OUTPUT_NAME }}
+          path: |
+            src/**/bin/
+            src/**/obj/
+            tests/**/bin/
+            tests/**/obj/
+
+  tests:
+    name: Run Unit Tests
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: ⚙️ Setup .NET ️
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: 📦 Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.BUILD_OUTPUT_NAME }}
+
+      - name: 🧪 Run Unit Tests
+        run: dotnet test --no-build --configuration ${{ env.DOTNET_CONFIGURATION }} --verbosity ${{ env.TESTS_VERBOSITY_LEVEL }}
