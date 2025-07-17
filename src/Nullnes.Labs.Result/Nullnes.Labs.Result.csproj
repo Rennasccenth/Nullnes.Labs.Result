@@ -1,49 +1,49 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>netstandard2.1</TargetFramework>
-        <Nullable>enable</Nullable>
-        <LangVersion>default</LangVersion>
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>default</LangVersion>
 
-<!--    Package Configurations -->
-        <PackageId>Nullnes.Labs.Result</PackageId>
-        <Description>This is a opinionated but somewhat flexible ROP(Railway Oriented Programming) monadic Result, lean
-            and simple to allow you to focus on your business logic and not on error handling capabilities.</Description>
-        <PackageProjectUrl>https://github.com/Rennasccenth/nullnes.result</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/Rennasccenth/nullnes.result</RepositoryUrl>
-        <RepositoryType>git</RepositoryType>
-        <Authors>Felipe Nunes</Authors>
-        <Company>Nullnes.Labs</Company>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageTags>Result; Railway Oriented Programming; ROP; Error Handling; Monadic</PackageTags>
-    </PropertyGroup>
+    <!--    Package Configurations -->
+    <PackageId>Nullnes.Labs.Result</PackageId>
+    <Description>This is a opinionated but somewhat flexible ROP(Railway Oriented Programming) monadic Result, lean
+      and simple to allow you to focus on your business logic and not on error handling capabilities.</Description>
+    <PackageProjectUrl>https://github.com/Rennasccenth/nullnes.result</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Rennasccenth/nullnes.result</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Authors>Felipe Nunes</Authors>
+    <Company>Nullnes.Labs</Company>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageTags>Result; Railway Oriented Programming; ROP; Error Handling; Monadic</PackageTags>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <Compile Update="Result.Bind.cs">
-        <DependentUpon>Result.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Result.Match.cs">
-        <DependentUpon>Result.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Result.Map.cs">
-        <DependentUpon>Result.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Result.MapError.cs">
-        <DependentUpon>Result.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Result.Ensure.cs">
-        <DependentUpon>Result.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Result.OnFailure.cs">
-        <DependentUpon>Result.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Result.OnSuccess.cs">
-        <DependentUpon>Result.cs</DependentUpon>
-      </Compile>
-    </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Result.Bind.cs">
+      <DependentUpon>Result.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Result.Match.cs">
+      <DependentUpon>Result.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Result.Map.cs">
+      <DependentUpon>Result.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Result.MapError.cs">
+      <DependentUpon>Result.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Result.Ensure.cs">
+      <DependentUpon>Result.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Result.OnFailure.cs">
+      <DependentUpon>Result.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Result.OnSuccess.cs">
+      <DependentUpon>Result.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Nullnes.Labs.Result.Abstractions\Nullnes.Labs.Result.Abstractions.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Nullnes.Labs.Result.Abstractions\Nullnes.Labs.Result.Abstractions.csproj" />
+  </ItemGroup>
 
 </Project>
