@@ -21,4 +21,11 @@
     <ProjectReference Include="..\Nullnes.Labs.Result.Abstractions\Nullnes.Labs.Result.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.7.115" >
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
 </Project>
