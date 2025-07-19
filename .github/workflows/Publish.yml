@@ -23,7 +23,10 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: ✓ Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: ⚙️ Setup .NET ️
         uses: actions/setup-dotnet@v4
@@ -74,7 +77,10 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: ✓ Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       
       - name: ⚙️ Setup .NET ️
         uses: actions/setup-dotnet@v4
