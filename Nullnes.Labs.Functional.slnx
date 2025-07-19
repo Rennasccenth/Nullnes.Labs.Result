@@ -3,10 +3,10 @@
     <File Path=".editorconfig" />
     <File Path="Directory.Build.props" />
   </Folder>
-  <Folder Name="/Solution Items/CI">
+  <Folder Name="/Solution Items/CI/">
     <File Path=".github/workflows/Pipeline.yml" />
   </Folder>
-  <Folder Name="/Solution Items/CI/Scripts">
+  <Folder Name="/Solution Items/CI/Scripts/">
     <File Path=".github/scripts/build_and_pack_projects.sh" />
   </Folder>
   <Folder Name="/src/">
