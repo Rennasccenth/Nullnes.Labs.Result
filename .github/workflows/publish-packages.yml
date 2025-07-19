@@ -19,13 +19,13 @@ env:
 
 jobs:
   build:
-    uses: ./.github/workflows/reusable/build.yml
+    uses: ./.github/workflows/reusable-build.yml
     with:
       dotnet-version: ${{ env.DOTNET_VERSION }}
       configuration: ${{ env.CONFIGURATION }}
 
   tests:
-    uses: ./.github/workflows/reusable/unit-tests.yml
+    uses: ./.github/workflows/reusable-unit-tests.yml
     with:
       dotnet-version: ${{ env.DOTNET_VERSION }}
       configuration: ${{ env.CONFIGURATION }}
