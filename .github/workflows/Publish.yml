@@ -90,8 +90,8 @@ jobs:
       - name: 🚀 Find and Pack NuGet packages
         shell: bash
         run: |
-          chmod +x ./github/scripts/build_and_pack_projects.sh
-          ./github/scripts/build_and_pack_projects.sh --configuration ${{ env.DOTNET_CONFIGURATION }} --verbosity ${{ env.LOGS_VERBOSITY_LEVEL}} --pack-output ${{ env.NUGET_PACKAGES_FOLDER }}
+          chmod +x ./.github/scripts/build_and_pack_projects.sh
+          ./.github/scripts/build_and_pack_projects.sh --configuration ${{ env.DOTNET_CONFIGURATION }} --verbosity ${{ env.LOGS_VERBOSITY_LEVEL}} --pack-output ${{ env.NUGET_PACKAGES_FOLDER }}
 
       - name: 🚀 Publish NuGet packages
         run: dotnet nuget push "${{ env.NUGET_PACKAGES_FOLDER}}/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source ${{ env.NUGET_SOURCE_URL }} --skip-duplicate
