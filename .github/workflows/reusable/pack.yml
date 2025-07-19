@@ -1,0 +1,60 @@
+name: Pack
+
+on:
+  workflow_call:
+    inputs:
+      dotnet-version:
+        required: true
+        type: string
+        default: 9.0.x
+        description: Defines the .NET version to be used for pack the projects
+      configuration:
+        required: false
+        default: Release
+        type: string
+        description: Defines the Configuration of the pack command
+      verbosity:
+        required: false
+        type: string
+        default: normal
+        description: Defines the verbosity level of the pack command
+      packages-output-folder:
+        required: false
+        default: ./nupkgs
+        type: string
+      environment:
+        required: false
+        type: string
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ✓ Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: ⚙️ Setup .NET ️
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ inputs.dotnet-version }}
+
+      - name: Pack Projects
+        run: |
+          chmod +x ./.github/scripts/build_and_pack_projects.sh
+
+          if [[ "${{ inputs.environment }}" == "Integration" ]]; then
+            echo "Packing with integration-specific logic..."
+            ./.github/scripts/build_and_pack_projects.sh \
+              --configuration ${{ inputs.configuration }} \
+              --verbosity ${{ inputs.verbosity }} \
+              --pack-output ${{ inputs.packages-output-folder }} \
+              --include-prerelease
+          else
+            echo "Standard packing..."
+            ./.github/scripts/build_and_pack_projects.sh \
+              --configuration ${{ inputs.configuration }} \
+              --verbosity ${{ inputs.verbosity }} \
+              --pack-output ${{ inputs.packages-output-folder }}
+          fi

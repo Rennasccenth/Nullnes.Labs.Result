@@ -1,0 +1,52 @@
+name: Publish Entry
+
+on:
+  push:
+    branches:
+      - feature/publish-into-nuget
+
+env:
+  DOTNET_VERSION: 9.0.x  
+  CONFIGURATION: Release
+  VERBOSITY: normal
+  OUTPUT_FOLDER: ./nupkgs
+  DOTNET_CONFIGURATION: Release
+  
+  LOGS_VERBOSITY_LEVEL: normal
+
+  # NUGET
+  NUGET_PACKAGES_FOLDER: './nupkgs'
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable/build.yml
+    with:
+      dotnet-version: ${{ env.DOTNET_VERSION }}
+      configuration: ${{ env.CONFIGURATION }}
+
+  tests:
+    uses: ./.github/workflows/reusable/unit-tests.yml
+    with:
+      dotnet-version: ${{ env.DOTNET_VERSION }}
+      configuration: ${{ env.CONFIGURATION }}
+      upload-artifacts-name: ${{ env.OUTPUT_FOLDER }}
+
+
+#  pack:
+#    needs: build
+#    uses: ./.github/workflows/reusable-pack.yml
+#    with:
+#      configuration: ${{ env.CONFIGURATION }}
+#      verbosity: ${{ env.VERBOSITY }}
+#      output-folder: ${{ env.OUTPUT_FOLDER }}
+#      environment: Integration  # <- Can be dynamic
+#
+#  push:
+#    needs: pack
+#    uses: ./.github/workflows/reusable-push.yml
+#    with:
+#      source-url: https://int.nugettest.org
+#      output-folder: ${{ env.OUTPUT_FOLDER }}
+#    secrets:
+#      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+#    environment: Integration

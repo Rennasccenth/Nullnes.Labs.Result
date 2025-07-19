@@ -1,0 +1,67 @@
+name: Build
+run-name: Build projects
+
+on:
+  workflow_call:
+    inputs:
+      dotnet-version:
+        required: true
+        type: string
+        default: 9.0.x
+        description: Defines the .NET version to be used for build the projects 
+      configuration:
+        required: false
+        default: Release
+        type: string
+        description: Defines the Configuration of the build command
+      verbosity:
+        required: false
+        type: string
+        default: normal
+        description: Defines the verbosity level of the build command
+      should-include-tests-artifacts:
+        required: false
+        type: boolean
+        default: true
+        description: Instructs the build workflow when to share the test projects artifacts
+      upload-artifacts-name:
+        required: false
+        type: string
+        default: build-artifacts-output-name
+        description: The name of the artifacts upload step wheres the workflow upload the build artifacts
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ✓ Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: ⚙️ Setup .NET ️
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ inputs.dotnet-version }}
+
+      - name: 🔎 Restore dependencies
+        run: dotnet restore
+
+      - name: 🔨 Build
+        run: dotnet build --no-restore --configuration ${{ inputs.configuration }} --verbosity ${{ inputs.verbosity }}
+
+      - name: 📦 Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.upload-artifacts-name }}
+          path: |
+             src/**/bin/
+             src/**/obj/
+
+      - name: 📦 Upload test build artifacts
+        if: inputs.should-include-tests-artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.upload-artifacts-name }}
+          path: |
+            tests/**/bin/
+            tests/**/obj/
