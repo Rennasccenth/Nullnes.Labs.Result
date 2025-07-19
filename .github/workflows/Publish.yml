@@ -16,8 +16,7 @@ env:
 
   # NUGET
   NUGET_PACKAGES_FOLDER: './nupkgs'
-#  NUGET_SOURCE_URL: https://api.nuget.org/v3/index.json
-  NUGET_SOURCE_URL: https://int.nugettest.org
+
 jobs:
   build:
     name: Build
@@ -76,6 +75,7 @@ jobs:
     name: Publish to NuGet
     needs: test
     runs-on: ubuntu-latest
+    environment: Integration
     steps:
       - name: ✓ Checkout
         uses: actions/checkout@v4
@@ -94,4 +94,4 @@ jobs:
           ./.github/scripts/build_and_pack_projects.sh --configuration ${{ env.DOTNET_CONFIGURATION }} --verbosity ${{ env.LOGS_VERBOSITY_LEVEL}} --pack-output ${{ env.NUGET_PACKAGES_FOLDER }}
 
       - name: 🚀 Publish NuGet packages
-        run: dotnet nuget push "${{ env.NUGET_PACKAGES_FOLDER}}/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source ${{ env.NUGET_SOURCE_URL }} --skip-duplicate
+        run: dotnet nuget push "${{ env.NUGET_PACKAGES_FOLDER}}/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source ${{ vars.NUGET_SOURCE_URL }} --skip-duplicate
