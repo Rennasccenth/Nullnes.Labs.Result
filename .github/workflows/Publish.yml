@@ -13,8 +13,11 @@ env:
   
   # Transient
   BUILD_OUTPUT_NAME: build-name
-  NUGET_PACKAGES_FOLDER: './nupkgs'
 
+  # NUGET
+  NUGET_PACKAGES_FOLDER: './nupkgs'
+#  NUGET_SOURCE_URL: https://api.nuget.org/v3/index.json
+  NUGET_SOURCE_URL: https://int.nugettest.org
 jobs:
   build:
     name: Build
@@ -61,7 +64,7 @@ jobs:
           name: ${{ env.BUILD_OUTPUT_NAME }}
 
       - name: 🧪 Run Unit Tests
-        run: dotnet test --no-build --configuration ${{ env.DOTNET_CONFIGURATION }} --verbosity ${{ env.TESTS_VERBOSITY_LEVEL }}
+        run: dotnet test --no-build --configuration ${{ env.DOTNET_CONFIGURATION }} --verbosity ${{ env.LOGS_VERBOSITY_LEVEL }}
 
   publish:
     name: Publish to NuGet
@@ -75,19 +78,11 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: 📦 Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ env.BUILD_OUTPUT_NAME }}
-
-      - name: 🚀 Find and pack NuGet packages
+      - name: 🚀 Find and Pack NuGet packages
+        shell: bash
         run: |
-          mkdir -p ${{ env.NUGET_PACKAGES_FOLDER}}
-          for project in $(find ./src -name "*.csproj")
-          do
-            echo "Packing $project"
-            dotnet pack $project --no-build --configuration ${{ env.DOTNET_CONFIGURATION }} --output ${{ env.NUGET_PACKAGES_FOLDER}}/$project
-          done
+          chmod +x ./github/scripts/build_and_pack_projects.sh
+          ./github/scripts/build_and_pack_projects.sh --configuration ${{ env.DOTNET_CONFIGURATION }} --verbosity ${{ env.LOGS_VERBOSITY_LEVEL}} --pack-output ${{ env.NUGET_PACKAGES_FOLDER }}
 
       - name: 🚀 Publish NuGet packages
-        run: dotnet nuget push "${{ env.NUGET_PACKAGES_FOLDER}}/**/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+        run: dotnet nuget push "${{ env.NUGET_PACKAGES_FOLDER}}/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source ${{ env.NUGET_SOURCE_URL }} --skip-duplicate
