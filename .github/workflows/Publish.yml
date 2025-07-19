@@ -9,8 +9,7 @@ env:
   DOTNET_VERSION: 9.0.x
   DOTNET_CONFIGURATION: Release
   
-  # Testing Variables
-  TESTS_VERBOSITY_LEVEL: normal
+  LOGS_VERBOSITY_LEVEL: normal
   
   # Transient
   BUILD_OUTPUT_NAME: build-name
@@ -68,8 +67,6 @@ jobs:
     name: Publish to NuGet
     needs: test
     runs-on: ubuntu-latest
-    # Only run on main branch, not on PRs
-#    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
       
