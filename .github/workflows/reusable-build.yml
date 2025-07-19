@@ -9,7 +9,7 @@ on:
         type: string
         default: 9.0.x
         description: Defines the .NET version to be used for build the projects 
-      configuration:
+      dotnet-configuration:
         required: false
         default: Release
         type: string
@@ -47,7 +47,7 @@ jobs:
         run: dotnet restore
 
       - name: 🔨 Build
-        run: dotnet build --no-restore --configuration ${{ inputs.configuration }} --verbosity ${{ inputs.verbosity }}
+        run: dotnet build --no-restore --configuration ${{ inputs.dotnet-configuration }} --verbosity ${{ inputs.verbosity }}
 
       - name: 📦 Upload build artifacts
         uses: actions/upload-artifact@v4

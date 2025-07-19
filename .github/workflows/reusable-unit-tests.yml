@@ -9,7 +9,7 @@ on:
         type: string
         default: 9.0.x
         description: Defines the .NET version to be used for build the projects
-      configuration:
+      dotnet-configuration:
         required: false
         default: Release
         type: string
@@ -40,4 +40,4 @@ jobs:
           dotnet-version: ${{ inputs.dotnet-version }}
 
       - name: 🧪 Run Unit Tests
-        run: dotnet test --no-build --configuration ${{ inputs.configuration }} --verbosity ${{ inputs.verbosity }}
+        run: dotnet test --no-build --configuration ${{ inputs.dotnet-configuration }} --verbosity ${{ inputs.verbosity }}
