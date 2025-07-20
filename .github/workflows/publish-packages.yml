@@ -5,29 +5,24 @@ on:
     branches:
       - feature/publish-into-nuget
 
-env:
-  DOTNET_VERSION: &dotnet_version 9.0.x
-  DOTNET_CONFIGURATION: &dotnet_configuration Release
-  VERBOSITY_LEVEL: &verbosity_level normal
-  NUGET_PACKAGES_FOLDER: &nuget_packages_folder ./nupkgs
-
 jobs:
   build:
     uses: ./.github/workflows/reusable-build.yml
     with:
-      dotnet-version: *dotnet_version
-      dotnet-configuration: *dotnet_configuration
-      verbosity: *verbosity_level
+      dotnet-version: ${{ vars.DOTNET_VERSION }}
+      dotnet-configuration: ${{ vars.DOTNET_CONFIGURATION }}
+      verbosity: ${{ vars.VERBOSITY_LEVEL }}
       should-include-tests-artifacts: true
-      upload-artifacts-name: "some-cool-name"
+      upload-artifacts-name: "artifacts-upload-name"
 
   tests:
+    needs: build
     uses: ./.github/workflows/reusable-unit-tests.yml
     with:
-      dotnet-version: *dotnet_version
-      dotnet-configuration: *dotnet_configuration
-      verbosity: *verbosity_level
-      upload-artifacts-name: "some-cool-name"
+      dotnet-version: ${{ vars.DOTNET_VERSION }}
+      dotnet-configuration: ${{ vars.DOTNET_CONFIGURATION }}
+      verbosity: ${{ vars.VERBOSITY_LEVEL }}
+      upload-artifacts-name: "artifacts-upload-name"
 
 #  pack:
 #    needs: build
