@@ -2,6 +2,10 @@ name: Pack
 
 on:
   workflow_call:
+    outputs:
+      upload-packed-artifacts-name:
+        description: Name used while uploading the packed artifacts, use it to download the artifacts
+        value: ${{ inputs.upload-packed-artifacts-name }}
     inputs:
       dotnet-version:
         required: true
@@ -18,6 +22,11 @@ on:
         type: string
         default: build-artifacts-name
         description: The name of the artifacts upload step wheres a build workflow uploaded the build artifacts
+      upload-packed-artifacts-name:
+        required: true
+        type: string
+        default: pack-artifacts-name
+        description: The name of the artifacts upload step wheres the pack workflow uploaded the packed [.nupkgs] files
       nuget-packages-output-folder:
         required: true
         default: ./nupkgs
@@ -80,7 +89,6 @@ jobs:
           VERSION=$(nbgv get-version -p "$(dirname ${{ matrix.project }})" --variable Version)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-
       - name: Get version.json folder
         id: version-folder
         shell: bash
@@ -108,3 +116,9 @@ jobs:
             --configuration ${{ inputs.dotnet-configuration }} \
             --output ${{ inputs.nuget-packages-output-folder }} \
             /p:Version=${{ steps.calculate-version.outputs.version }}
+
+      - name: 📦 Upload packed projects
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.upload-build-artifacts-name }}
+          path: ${{ inputs.nuget-packages-output-folder }}
