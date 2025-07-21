@@ -54,8 +54,5 @@ jobs:
         with:
           dotnet-version: ${{ inputs.dotnet-version }}
 
-      - name: 🧾 List downloaded test artifacts
-        run: tree .
-
       - name: 🧪 Run Unit Tests
         run: dotnet test --no-build --configuration ${{ inputs.dotnet-configuration }} --verbosity ${{ inputs.verbosity }}
