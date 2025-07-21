@@ -1,4 +1,4 @@
-name: Build
+name: Build .NET Projects
 run-name: Build projects
 
 on:
@@ -24,11 +24,25 @@ on:
         type: boolean
         default: true
         description: Instructs the build workflow when to share the test projects artifacts
-      upload-artifacts-name:
+      upload-build-artifacts-name:
         required: false
         type: string
-        default: build-artifacts-output-name
+        default: build-artifacts-name
         description: The name of the artifacts upload step wheres the workflow upload the build artifacts
+      upload-test-build-artifacts-name:
+        required: false
+        type: string
+        default: test-build-artifacts-name
+        description: The name of the artifacts upload step wheres the workflow upload the build artifacts
+
+    outputs:
+      upload-build-artifacts-name:
+        description: Name of build artifact, use it to download the artifacts
+        value: ${{ jobs.build.outputs.upload-build-artifacts-name }}
+      upload-test-build-artifacts-name:
+        description: Name of test build artifact, use it to download the artifacts
+        value: ${{ jobs.build.outputs.upload-test-build-artifacts-name }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -52,7 +66,7 @@ jobs:
       - name: 📦 Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.upload-artifacts-name }}
+          name: ${{ inputs.upload-build-artifacts-name }}
           path: |
              src/**/bin/
              src/**/obj/
@@ -61,7 +75,11 @@ jobs:
         if: inputs.should-include-tests-artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.upload-artifacts-name }}
+          name: ${{ inputs.upload-test-build-artifacts-name }}
           path: |
             tests/**/bin/
             tests/**/obj/
+
+    outputs:
+      upload-build-artifacts-name: ${{ inputs.upload-build-artifacts-name }}
+      upload-test-build-artifacts-name: ${{ inputs.upload-test-build-artifacts-name }}

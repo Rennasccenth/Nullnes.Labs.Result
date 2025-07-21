@@ -13,7 +13,8 @@ jobs:
       dotnet-configuration: ${{ vars.DOTNET_CONFIGURATION }}
       verbosity: ${{ vars.VERBOSITY_LEVEL }}
       should-include-tests-artifacts: true
-      upload-artifacts-name: "artifacts-upload-name"
+      upload-build-artifacts-name: build-artifacts-upload-name
+      upload-test-build-artifacts-name: test-artifacts-upload-name
 
   tests:
     needs: build
@@ -22,7 +23,8 @@ jobs:
       dotnet-version: ${{ vars.DOTNET_VERSION }}
       dotnet-configuration: ${{ vars.DOTNET_CONFIGURATION }}
       verbosity: ${{ vars.VERBOSITY_LEVEL }}
-      upload-artifacts-name: "artifacts-upload-name"
+      upload-build-artifacts-name: ${{ needs.build.outputs.upload-build-artifacts-name }}
+      upload-test-build-artifacts-name: ${{ needs.build.outputs.upload-test-build-artifacts-name }}
 
 #  pack:
 #    needs: build
