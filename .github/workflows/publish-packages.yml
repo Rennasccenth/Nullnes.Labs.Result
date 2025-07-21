@@ -44,6 +44,9 @@ jobs:
     name: 🚀 Push to NuGet Feed
     runs-on: ubuntu-latest
     environment: Integration
+    strategy:
+      matrix: 
+        pack-artifact: ${{ fromJson(needs.pack.outputs.matrix) }}
     needs: [build, tests, pack]
     steps:
       - name: ✓ Shallow Checkout
@@ -52,7 +55,7 @@ jobs:
       - name: 📦 Download Packed artifacts
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.pack.outputs.upload-packed-artifacts-name }}
+          name: ${{ matrix.pack-artifact }}
           path: ${{ vars.NUGET_PACKAGES_FOLDER }}
 
       - name: ⚙️ Setup .NET ️
