@@ -43,6 +43,7 @@ jobs:
   push:
     name: 🚀 Push to NuGet Feed
     runs-on: ubuntu-latest
+    environment: Integration
     needs: [build, tests, pack]
     steps:
       - name: ✓ Shallow Checkout
@@ -60,8 +61,4 @@ jobs:
           dotnet-version: ${{ vars.DOTNET_VERSION }}
 
       - name: 🚀 Publish NuGet packages
-        run: | 
-          dotnet nuget push "${{ vars.NUGET_PACKAGES_FOLDER }}/*.nupkg" \
-            --api-key ${{ secrets.NUGET_API_KEY }} \
-            --source ${{ vars.NUGET_SOURCE_URL }} \
-            --skip-duplicate
+        run: dotnet nuget push "${{ vars.NUGET_PACKAGES_FOLDER }}/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source ${{ vars.NUGET_SOURCE_URL }} --skip-duplicate
