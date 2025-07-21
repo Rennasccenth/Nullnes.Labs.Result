@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     name: 🧱 Build entire solution
-    uses: ./.github/workflows/reusable-build.yml
+    uses: Rennasccenth/Nullnes.Labs.Result/.github/workflows/reusable-build.yml@feature/publish-into-nuget
     with:
       dotnet-version: ${{ vars.DOTNET_VERSION }}
       dotnet-configuration: ${{ vars.DOTNET_CONFIGURATION }}
@@ -20,7 +20,7 @@ jobs:
   tests:
     name: 🧪 Tests
     needs: build
-    uses: ./.github/workflows/reusable-unit-tests.yml
+    uses: Rennasccenth/Nullnes.Labs.Result/.github/workflows/reusable-unit-tests.yml@feature/publish-into-nuget
     with:
       dotnet-version: ${{ vars.DOTNET_VERSION }}
       dotnet-configuration: ${{ vars.DOTNET_CONFIGURATION }}
@@ -31,13 +31,12 @@ jobs:
   pack:
     name: 📦 Pack
     needs: [ build, tests ]
-    uses: ./.github/workflows/reusable-pack.yml
+    uses: Rennasccenth/Nullnes.Labs.Result/.github/workflows/reusable-pack.yml@feature/publish-into-nuget
     with:
       dotnet-version: ${{ vars.DOTNET_VERSION }}
       dotnet-configuration: ${{ vars.DOTNET_CONFIGURATION }}
       verbosity: ${{ vars.VERBOSITY_LEVEL }}
       upload-build-artifacts-name: ${{ needs.build.outputs.upload-build-artifacts-name }}
-      upload-packed-artifacts-name: "wip-this-will-change"
       nuget-packages-output-folder: ${{ vars.NUGET_PACKAGES_FOLDER }}
       environment: Integration
 

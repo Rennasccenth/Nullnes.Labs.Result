@@ -3,6 +3,13 @@ run-name: Build projects
 
 on:
   workflow_call:
+    outputs:
+      upload-build-artifacts-name:
+        description: Name of build artifact, use it to download the artifacts
+        value: ${{ jobs.build.outputs.upload-build-artifacts-name }}
+      upload-test-build-artifacts-name:
+        description: Name of test build artifact, use it to download the artifacts
+        value: ${{ jobs.build.outputs.upload-test-build-artifacts-name }}
     inputs:
       dotnet-version:
         required: true
@@ -34,14 +41,6 @@ on:
         type: string
         default: test-build-artifacts-name
         description: The name of the artifacts upload step wheres the workflow upload the build artifacts
-
-    outputs:
-      upload-build-artifacts-name:
-        description: Name of build artifact, use it to download the artifacts
-        value: ${{ jobs.build.outputs.upload-build-artifacts-name }}
-      upload-test-build-artifacts-name:
-        description: Name of test build artifact, use it to download the artifacts
-        value: ${{ jobs.build.outputs.upload-test-build-artifacts-name }}
 
 jobs:
   build:

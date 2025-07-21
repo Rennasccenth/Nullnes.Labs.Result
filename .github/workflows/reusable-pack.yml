@@ -5,7 +5,7 @@ on:
     outputs:
       upload-packed-artifacts-name:
         description: Name used while uploading the packed artifacts, use it to download the artifacts
-        value: ${{ inputs.upload-packed-artifacts-name }}
+        value: ${{ jobs.pack.outputs.upload-packed-artifacts-name }}
     inputs:
       dotnet-version:
         required: true
@@ -22,11 +22,6 @@ on:
         type: string
         default: build-artifacts-name
         description: The name of the artifacts upload step wheres a build workflow uploaded the build artifacts
-      upload-packed-artifacts-name:
-        required: true
-        type: string
-        default: pack-artifacts-name
-        description: The name of the artifacts upload step wheres the pack workflow uploaded the packed [.nupkgs] files
       nuget-packages-output-folder:
         required: true
         default: ./nupkgs
@@ -62,6 +57,8 @@ jobs:
     name: 📦 Pack detected project
     runs-on: ubuntu-latest
     needs: detect-projects
+    outputs:
+      upload-packed-artifacts-name: ${{ steps.rand.outputs.name }}
     strategy:
       matrix:
         project: ${{ fromJson(needs.detect-projects.outputs.matrix) }}
@@ -117,8 +114,12 @@ jobs:
             --output ${{ inputs.nuget-packages-output-folder }} \
             /p:Version=${{ steps.calculate-version.outputs.version }}
 
+      - name: 🔧 Generate random artifact name
+        id: rand
+        run: echo "name=artifact-$(uuidgen)" >> $GITHUB_OUTPUT
+
       - name: 📦 Upload packed projects
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.upload-build-artifacts-name }}
+          name: ${{ steps.rand.outputs.name }}
           path: ${{ inputs.nuget-packages-output-folder }}
