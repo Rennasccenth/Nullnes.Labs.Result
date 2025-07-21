@@ -46,6 +46,7 @@ jobs:
       - name: ✅ Set projects matrix
         run: |
           projects=$(find ./src -name '*.csproj' | jq --raw-input --slurp --compact-output 'split("\n") | map(select(length > 0))')
+          echo $projects
           echo "matrix=$projects" >> $GITHUB_OUTPUT
 
   pack:
