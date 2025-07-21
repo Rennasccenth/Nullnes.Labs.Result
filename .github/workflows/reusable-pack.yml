@@ -83,13 +83,14 @@ jobs:
       - name: 🔢 Get package version
         id: nbgv
         uses: dotnet/nbgv@v0.4.1
-      - run: |
+        with: 
+          path: dirname(${{ matrix.project }}
+
+      - name: Print version
+        run: |
           echo "Version is ${{ steps.nbgv.outputs.Version }}"
           echo "PreReleaseVersion is ${{ steps.nbgv.outputs.PrereleaseVersion }}"
           echo "SemVer2 is ${{ steps.nbgv.outputs.SemVer2 }}"
-        with: 
-           path: |
-             dirname(${{ matrix.project }})
 
       - name: 🎁 Pack Project
         shell: bash
