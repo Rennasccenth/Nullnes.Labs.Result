@@ -41,11 +41,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.upload-build-artifacts-name }}
+          path: ./src
 
       - name: 📦 Download test build artifacts
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.upload-test-build-artifacts-name }}
+          path: ./tests
 
       - name: ⚙️ Setup .NET ️
         uses: actions/setup-dotnet@v4
