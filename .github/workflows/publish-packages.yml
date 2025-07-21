@@ -7,6 +7,7 @@ on:
 
 jobs:
   build:
+    name: Build entire solution
     uses: ./.github/workflows/reusable-build.yml
     with:
       dotnet-version: ${{ vars.DOTNET_VERSION }}
@@ -17,6 +18,7 @@ jobs:
       upload-test-build-artifacts-name: test-artifacts-upload-name
 
   tests:
+    name: Run Unit Tests
     needs: build
     uses: ./.github/workflows/reusable-unit-tests.yml
     with:
@@ -26,15 +28,17 @@ jobs:
       upload-build-artifacts-name: ${{ needs.build.outputs.upload-build-artifacts-name }}
       upload-test-build-artifacts-name: ${{ needs.build.outputs.upload-test-build-artifacts-name }}
 
-#  pack:
-#    needs: build
-#    uses: ./.github/workflows/reusable-pack.yml
-#    with:
-#      configuration: ${{ env.CONFIGURATION }}
-#      verbosity: ${{ env.VERBOSITY }}
-#      output-folder: ${{ env.OUTPUT_FOLDER }}
-#      environment: Integration  # <- Can be dynamic
-#
+  pack:
+    name: Pack projects
+    needs: [build, tests]
+    uses: ./.github/workflows/reusable-pack.yml
+    with:
+      dotnet-configuration: ${{ vars.DOTNET_CONFIGURATION }}
+      verbosity: ${{ vars.VERBOSITY_LEVEL }}
+      upload-build-artifacts-name: ${{ needs.build.outputs.upload-build-artifacts-name }}
+      nuget-packages-output-folder: ${{ vars.NUGET_PACKAGES_FOLDER }}
+      environment: Integration
+
 #  push:
 #    needs: pack
 #    uses: ./.github/workflows/reusable-push.yml
