@@ -80,11 +80,20 @@ jobs:
           VERSION=$(nbgv get-version -p "$(dirname ${{ matrix.project }})" --variable Version)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
+
+      - name: Get version.json folder
+        id: version-folder
+        shell: bash
+        run: |
+          echo "${{ matrix.project }}"
+          PROJECT_PATH=$(dirname ${{ matrix.project }})
+          echo "version-file-path=$PROJECT_PATH" >> $GITHUB_OUTPUT
+
       - name: 🔢 Get package version
         id: nbgv
         uses: dotnet/nbgv@v0.4.1
         with: 
-          path: dirname ${{ matrix.project }}
+          path: ${{ steps.version-folder.outputs.version-file-path }}
 
       - name: Print version
         run: |
