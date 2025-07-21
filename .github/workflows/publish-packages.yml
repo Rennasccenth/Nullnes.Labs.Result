@@ -41,7 +41,7 @@ jobs:
       environment: Integration
 
   push:
-    name: 🚀Push to NuGet Feed
+    name: 🚀 Push to NuGet Feed
     runs-on: ubuntu-latest
     needs: [build, tests, pack]
     steps:
@@ -61,8 +61,7 @@ jobs:
 
       - name: 🚀 Publish NuGet packages
         run: | 
-          dotnet nuget push \
-            "${{ vars.NUGET_PACKAGES_FOLDER }}/*.nupkg" \
+          dotnet nuget push "${{ vars.NUGET_PACKAGES_FOLDER }}/*.nupkg" \
             --api-key ${{ secrets.NUGET_API_KEY }} \
             --source ${{ vars.NUGET_SOURCE_URL }} \
             --skip-duplicate

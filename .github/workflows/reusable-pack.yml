@@ -84,7 +84,7 @@ jobs:
         id: nbgv
         uses: dotnet/nbgv@v0.4.1
         with: 
-          path: dirname(${{ matrix.project }}
+          path: dirname ${{ matrix.project }}
 
       - name: Print version
         run: |
