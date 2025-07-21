@@ -19,11 +19,16 @@ on:
         type: string
         default: normal
         description: Defines the verbosity level of the build command
-      upload-artifacts-name:
+      upload-build-artifacts-name:
         required: true
         type: string
-        default: build-artifacts-output-name
-        description: The name of the artifacts upload step wheres the workflow should download the previously build artifacts
+        default: build-artifacts-name
+        description: The name of the artifacts upload step wheres a build workflow uploaded the build artifacts
+      upload-test-build-artifacts-name:
+        required: true
+        type: string
+        default: test-build-artifacts-name
+        description: The name of the artifacts upload step wheres a build workflow uploaded the build artifacts
 
 jobs:
   unit-tests:
@@ -32,7 +37,12 @@ jobs:
       - name: 📦 Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: ${{ inputs.upload-artifacts-name }}
+          name: ${{ inputs.upload-build-artifacts-name }}
+
+      - name: 📦 Download test build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.upload-test-build-artifacts-name }}
 
       - name: ⚙️ Setup .NET ️
         uses: actions/setup-dotnet@v4
