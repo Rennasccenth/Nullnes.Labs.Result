@@ -33,6 +33,7 @@ jobs:
     needs: [build, tests]
     uses: ./.github/workflows/reusable-pack.yml
     with:
+      dotnet-version: ${{ vars.DOTNET_VERSION }}
       dotnet-configuration: ${{ vars.DOTNET_CONFIGURATION }}
       verbosity: ${{ vars.VERBOSITY_LEVEL }}
       upload-build-artifacts-name: ${{ needs.build.outputs.upload-build-artifacts-name }}

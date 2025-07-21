@@ -9,19 +9,24 @@ on:
         default: 9.0.x
         description: Defines the .NET version to be used for pack the projects
       dotnet-configuration:
-        required: false
+        required: true
         default: Release
         type: string
         description: Defines the Configuration of the pack command
+      upload-build-artifacts-name:
+        required: true
+        type: string
+        default: build-artifacts-name
+        description: The name of the artifacts upload step wheres a build workflow uploaded the build artifacts
+      nuget-packages-output-folder:
+        required: true
+        default: ./nupkgs
+        type: string
       verbosity:
         required: false
         type: string
         default: normal
         description: Defines the verbosity level of the pack command
-      nuget-packages-output-folder:
-        required: false
-        default: ./nupkgs
-        type: string
       environment:
         required: false
         default: Integration
@@ -35,6 +40,9 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
+      - name: ✓ Shallow Checkout
+        uses: actions/checkout@v4
+
       - name: ✅ Set projects matrix
         run: |
           projects=$(find ./src -name '*.csproj' | jq --raw-input --slurp --compact-output 'split("\n") | map(select(length > 0))')
@@ -53,6 +61,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: 📦 Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.upload-build-artifacts-name }}
+          path: ./src
+      
       - name: ⚙️ Setup .NET ️
         uses: actions/setup-dotnet@v4
         with:
