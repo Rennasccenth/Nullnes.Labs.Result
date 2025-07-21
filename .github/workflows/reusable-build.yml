@@ -45,6 +45,7 @@ on:
 
 jobs:
   build:
+    name: 🔨 Build
     runs-on: ubuntu-latest
     outputs:
       upload-build-artifacts-name: ${{ inputs.upload-build-artifacts-name }}
@@ -63,7 +64,7 @@ jobs:
       - name: 🔎 Restore dependencies
         run: dotnet restore
 
-      - name: 🔨 Build
+      - name: 🔨 Build Solution
         run: dotnet build --no-restore --configuration ${{ inputs.dotnet-configuration }} --verbosity ${{ inputs.verbosity }}
 
       - name: 📦 Upload build artifacts

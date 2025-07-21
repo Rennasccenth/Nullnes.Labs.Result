@@ -38,15 +38,15 @@ jobs:
     name: 🔎 Detect projects to Pack
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      matrix: ${{ steps.set-projects-matrix.outputs.matrix }}
     steps:
       - name: ✓ Shallow Checkout
         uses: actions/checkout@v4
 
       - name: ✅ Set projects matrix
+        id: set-projects-matrix
         run: |
           projects=$(find ./src -name '*.csproj' | jq --raw-input --slurp --compact-output 'split("\n") | map(select(length > 0))')
-          echo $projects
           echo "matrix=$projects" >> $GITHUB_OUTPUT
 
   pack:

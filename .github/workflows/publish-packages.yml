@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Build entire solution
+    name: 🔨 Build entire solution
     uses: ./.github/workflows/reusable-build.yml
     with:
       dotnet-version: ${{ vars.DOTNET_VERSION }}
@@ -18,7 +18,7 @@ jobs:
       upload-test-build-artifacts-name: test-artifacts-upload-name
 
   tests:
-    name: Run Unit Tests
+    name: 🧪 Tests
     needs: build
     uses: ./.github/workflows/reusable-unit-tests.yml
     with:
@@ -29,7 +29,7 @@ jobs:
       upload-test-build-artifacts-name: ${{ needs.build.outputs.upload-test-build-artifacts-name }}
 
   pack:
-    name: Pack projects
+    name: 📦 Pack projects
     needs: [build, tests]
     uses: ./.github/workflows/reusable-pack.yml
     with:
