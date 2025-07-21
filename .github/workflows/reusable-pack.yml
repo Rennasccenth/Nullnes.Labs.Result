@@ -50,7 +50,7 @@ jobs:
           echo "matrix=$projects" >> $GITHUB_OUTPUT
 
   pack:
-    name: 📦 Pack detected projects
+    name: 📦 Pack detected project
     runs-on: ubuntu-latest
     needs: detect-projects
     strategy:
@@ -73,33 +73,28 @@ jobs:
         with:
           dotnet-version: ${{ inputs.dotnet-version }}
 
-      - name: 📦 Pack Project
+      - name: 🆚 Calculate package Version
+        id: calculate-version
         shell: bash
         run: |
           VERSION=$(nbgv get-version -p "$(dirname ${{ matrix.project }})" --variable Version)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: 🔢 Get package version
+        id: nbgv
+        uses: dotnet/nbgv@v0.4.1
+      - run: |
+          echo "Version is ${{ steps.nbgv.outputs.Version }}"
+          echo "PreReleaseVersion is ${{ steps.nbgv.outputs.PrereleaseVersion }}"
+          echo "SemVer2 is ${{ steps.nbgv.outputs.SemVer2 }}"
+        with: 
+           path: |
+             dirname(${{ matrix.project }})
+
+      - name: 🎁 Pack Project
+        shell: bash
+        run: |
           dotnet pack ${{ matrix.project }} \
             --configuration ${{ inputs.dotnet-configuration }} \
             --output ${{ inputs.nuget-packages-output-folder }} \
-            /p:Version=$VERSION
-
-#          chmod +x ./.github/scripts/pack_projects.sh
-#
-#          ./.github/scripts/pack_projects.sh \ 
-#            --configuration ${{ inputs.dotnet-version }} \
-#            --verbosity ${{ inputs.verbosity }} \
-#            --pack-output ${{ inputs.nuget-packages-output-folder }}
- 
-#         if [[ "${{ inputs.environment }}" == "Integration" ]]; then
-#            echo "Packing with integration-specific logic..."
-#            ./.github/scripts/build_and_pack_projects.sh \
-#              --configuration ${{ inputs.configuration }} \
-#              --verbosity ${{ inputs.verbosity }} \
-#              --pack-output ${{ inputs.nuget-packages-output-folder }} \
-#              --include-prerelease
-#          else
-#            echo "Standard packing..."
-#            ./.github/scripts/build_and_pack_projects.sh \
-#              --configuration ${{ inputs.configuration }} \
-#              --verbosity ${{ inputs.verbosity }} \
-#              --pack-output ${{ inputs.nuget-packages-output-folder }}
-#          fi
+            /p:Version=${{ steps.calculate-version.outputs.version }}

@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: 🔨 Build entire solution
+    name: 🧱 Build entire solution
     uses: ./.github/workflows/reusable-build.yml
     with:
       dotnet-version: ${{ vars.DOTNET_VERSION }}
@@ -29,8 +29,8 @@ jobs:
       upload-test-build-artifacts-name: ${{ needs.build.outputs.upload-test-build-artifacts-name }}
 
   pack:
-    name: 📦 Pack projects
-    needs: [build, tests]
+    name: 📦 Pack
+    needs: [ build, tests ]
     uses: ./.github/workflows/reusable-pack.yml
     with:
       dotnet-version: ${{ vars.DOTNET_VERSION }}
@@ -40,12 +40,29 @@ jobs:
       nuget-packages-output-folder: ${{ vars.NUGET_PACKAGES_FOLDER }}
       environment: Integration
 
-#  push:
-#    needs: pack
-#    uses: ./.github/workflows/reusable-push.yml
-#    with:
-#      source-url: https://int.nugettest.org
-#      output-folder: ${{ env.OUTPUT_FOLDER }}
-#    secrets:
-#      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-#    environment: Integration
+  push:
+    name: 🚀Push to NuGet Feed
+    runs-on: ubuntu-latest
+    needs: [build, tests, pack]
+    steps:
+      - name: ✓ Shallow Checkout
+        uses: actions/checkout@v4
+
+      - name: 📦 Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.upload-build-artifacts-name }}
+          path: ./src
+
+      - name: ⚙️ Setup .NET ️
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ vars.DOTNET_VERSION }}
+
+      - name: 🚀 Publish NuGet packages
+        run: | 
+          dotnet nuget push \
+            "${{ vars.NUGET_PACKAGES_FOLDER }}/*.nupkg" \
+            --api-key ${{ secrets.NUGET_API_KEY }} \
+            --source ${{ vars.NUGET_SOURCE_URL }} \
+            --skip-duplicate
