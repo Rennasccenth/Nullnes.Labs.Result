@@ -117,8 +117,8 @@ jobs:
       - name: 🔧 Generate Upload Name
         id: upld
         run: |
-          PROJECT_NAME=basename "$(dirname ${{ matrix.project }})"
-          echo "name=$PROJECT_NAME" >> $GITHUB_OUTPUT
+          PROJECT_NAME=$(basename "$(dirname "${{ matrix.project }}")")
+          echo "name=$PROJECT_NAME" >> "$GITHUB_OUTPUT"
 
       - name: 📦 Upload packed projects
         uses: actions/upload-artifact@v4
