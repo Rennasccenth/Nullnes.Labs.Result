@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using AwesomeAssertions;
 using Nullnes.Labs.Result.Tests.TestHelpers;
 using Xunit;
 

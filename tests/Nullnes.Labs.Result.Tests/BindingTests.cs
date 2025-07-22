@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Nullnes.Labs.Result.Tests.TestHelpers;
 using Xunit.Abstractions;
 
@@ -117,8 +117,8 @@ public sealed class BindingTests(ITestOutputHelper testOutputHelper)
         Result<int, TestError> successfulResult = new TestError("This is an Error and not a Success!");
         int expectedValueInErrorCase = 0;
 
-        Result<int, TestError> MultiplyBy10Wrapped(int input) => MultiplyBy10();
-        int MultiplyBy10() => throw new InvalidOperationException("This exception should not be thrown.");
+        Result<int, TestError> MultiplyBy10Wrapped(int input) => MultiplyBy10(input);
+        int MultiplyBy10(int someParam) => throw new InvalidOperationException($"This exception should not be thrown. {someParam}");
 
         // Act
         Result<int, TestError> boundResult = successfulResult.Bind(MultiplyBy10Wrapped);
@@ -140,8 +140,8 @@ public sealed class BindingTests(ITestOutputHelper testOutputHelper)
         Result<int, TestError> successfulResult = new TestError("This is an Error and not a Success!");
         int expectedValueInErrorCase = 0;
 
-        Task<Result<int, TestError>> MultiplyBy10Async(int input) => Task.FromResult<Result<int, TestError>>(MultiplyBy10());
-        int MultiplyBy10() => throw new InvalidOperationException("This exception should not be thrown.");
+        Task<Result<int, TestError>> MultiplyBy10Async(int input) => Task.FromResult<Result<int, TestError>>(MultiplyBy10(input));
+        int MultiplyBy10(int someParam) => throw new InvalidOperationException($"This exception should not be thrown. {someParam}");
 
         // Act
         Result<int, TestError> boundResult = await successfulResult.Bind(MultiplyBy10Async);

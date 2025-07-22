@@ -1,5 +1,5 @@
 using System.Globalization;
-using FluentAssertions;
+using AwesomeAssertions;
 using Nullnes.Labs.Result.Abstractions;
 using Nullnes.Labs.Result.Tests.TestHelpers;
 

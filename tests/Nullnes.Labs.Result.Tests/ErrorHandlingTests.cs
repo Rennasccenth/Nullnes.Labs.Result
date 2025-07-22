@@ -1,4 +1,5 @@
-using FluentAssertions;
+using AwesomeAssertions;
+
 using Nullnes.Labs.Result.Tests.TestHelpers;
 
 namespace Nullnes.Labs.Result.Tests;
@@ -49,7 +50,7 @@ public sealed class ErrorHandlingTests
         // Assert
         finalResult.Should().Be(fallbackValue, "should use fallback value when operation fails");
 
-        static Result<int, TestError> OperationThatFails(int _) => new TestError("Operation failed");
+        static Result<int, TestError> OperationThatFails(int someParam) => new TestError($"Operation failed {someParam}");
     }
 
     [Fact(DisplayName = "Error Handling: Should short-circuit on first error")]
@@ -72,8 +73,8 @@ public sealed class ErrorHandlingTests
         // Assert
         errorMessage.Should().Be(expectedError.Message, "should stop execution at first error");
 
-        static Result<int, TestError> FailOperation(int _) => new TestError("Operation failed");
-        static int ShouldNotExecute(int _) => throw new InvalidOperationException("This should not be executed");
+        static Result<int, TestError> FailOperation(int someParam) => new TestError($"Operation failed {someParam}");
+        static int ShouldNotExecute(int someParam) => throw new InvalidOperationException($"This should not be executed {someParam}");
     }
 
     [Fact(DisplayName = "Error Handling: Should recover from async error using fallback")]
@@ -96,10 +97,10 @@ public sealed class ErrorHandlingTests
         // Assert
         result.Should().Be(fallbackValue, "should use fallback value when async operation fails");
 
-        static async Task<Result<int, TestError>> AsyncOperationThatFails(int _)
+        static async Task<Result<int, TestError>> AsyncOperationThatFails(int someParam)
         {
             await Task.Delay(1);
-            return new TestError("Async operation failed");
+            return new TestError($"Async operation failed {someParam}");
         }
     }
 } 
