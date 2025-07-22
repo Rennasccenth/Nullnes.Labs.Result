@@ -86,7 +86,7 @@ jobs:
           VERSION=$(nbgv get-version -p "$(dirname ${{ matrix.project }})" --variable Version)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Get version.json folder
+      - name: 🗂️ Get version.json folder
         id: version-folder
         shell: bash
         run: |
@@ -112,7 +112,7 @@ jobs:
           dotnet pack ${{ matrix.project }} \
             --configuration ${{ inputs.dotnet-configuration }} \
             --output ${{ inputs.nuget-packages-output-folder }} \
-            /p:Version=${{ steps.calculate-version.outputs.version }}
+            /p:Version=${{ steps.nbgv.outputs.NuGetPackageVersion }}
 
       - name: 🔧 Generate Upload Name
         id: upld

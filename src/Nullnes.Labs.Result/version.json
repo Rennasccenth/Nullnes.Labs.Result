@@ -7,7 +7,15 @@
     ],
     "cloudBuild": {
         "buildNumber": {
-            "enabled": true
+            "enabled": false,
+            "includeCommitId": {
+                "when": "always",
+                "where": "buildMetadata"
+            }
         }
+    },
+    "nugetPackageVersion": {
+        "precision": "revision",
+        "semVer": 2
     }
 }
