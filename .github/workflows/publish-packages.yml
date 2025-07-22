@@ -15,7 +15,7 @@ jobs:
       verbosity: ${{ vars.VERBOSITY_LEVEL }}
       should-include-tests-artifacts: true
       upload-build-artifacts-name: "source-code-build-artifacts"
-      upload-test-build-artifacts-name: "test-code-artifacts"
+      upload-test-build-artifacts-name: "test-code-build-artifacts"
 
   tests:
     name: 🧪 Tests

@@ -79,14 +79,7 @@ jobs:
         with:
           dotnet-version: ${{ inputs.dotnet-version }}
 
-      - name: 🆚 Calculate package Version
-        id: calculate-version
-        shell: bash
-        run: |
-          VERSION=$(nbgv get-version -p "$(dirname ${{ matrix.project }})" --variable Version)
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-
-      - name: 🗂️ Get version.json folder
+      - name: 🗂️ Set version.json folder
         id: version-folder
         shell: bash
         run: |
@@ -99,12 +92,6 @@ jobs:
         uses: dotnet/nbgv@v0.4.1
         with: 
           path: ${{ steps.version-folder.outputs.version-file-path }}
-
-      - name: Print version
-        run: |
-          echo "Version is ${{ steps.nbgv.outputs.Version }}"
-          echo "PreReleaseVersion is ${{ steps.nbgv.outputs.PrereleaseVersion }}"
-          echo "SemVer2 is ${{ steps.nbgv.outputs.SemVer2 }}"
 
       - name: 🎁 Pack Project
         shell: bash
