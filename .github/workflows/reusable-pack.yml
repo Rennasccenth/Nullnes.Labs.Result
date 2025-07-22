@@ -101,13 +101,13 @@ jobs:
             --output ${{ inputs.nuget-packages-output-folder }} \
             /p:Version=${{ steps.nbgv.outputs.NuGetPackageVersion }}
 
-      - name: 🔧 Generate Upload Name
+      - name: 🫨 Generate Upload Name
         id: upld
         run: |
           PROJECT_NAME=$(basename "$(dirname "${{ matrix.project }}")")
           echo "name=$PROJECT_NAME" >> "$GITHUB_OUTPUT"
 
-      - name: 📦 Upload packed projects
+      - name: 📦 Upload packed project
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.nbgv.outputs.NuGetPackageVersion }}-${{ steps.upld.outputs.name }}-nupkg
