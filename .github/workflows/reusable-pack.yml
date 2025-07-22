@@ -114,12 +114,14 @@ jobs:
             --output ${{ inputs.nuget-packages-output-folder }} \
             /p:Version=${{ steps.calculate-version.outputs.version }}
 
-      - name: 🔧 Generate random artifact name
-        id: rand
-        run: echo "name=artifact-$(uuidgen)" >> $GITHUB_OUTPUT
+      - name: 🔧 Generate Upload Name
+        id: upld
+        run: |
+          PROJECT_NAME=basename "$(dirname ${{ matrix.project }})"
+          echo "name=$PROJECT_NAME" >> $GITHUB_OUTPUT
 
       - name: 📦 Upload packed projects
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.rand.outputs.name }}
+          name: project-${{ steps.upld.outputs.name }}
           path: ${{ inputs.nuget-packages-output-folder }}
