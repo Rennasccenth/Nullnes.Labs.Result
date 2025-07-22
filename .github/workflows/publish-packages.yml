@@ -14,8 +14,8 @@ jobs:
       dotnet-configuration: ${{ vars.DOTNET_CONFIGURATION }}
       verbosity: ${{ vars.VERBOSITY_LEVEL }}
       should-include-tests-artifacts: true
-      upload-build-artifacts-name: build-artifacts-upload-name
-      upload-test-build-artifacts-name: test-artifacts-upload-name
+      upload-build-artifacts-name: "source-code-build-artifacts"
+      upload-test-build-artifacts-name: "test-code-artifacts"
 
   tests:
     name: 🧪 Tests
@@ -38,7 +38,7 @@ jobs:
       verbosity: ${{ vars.VERBOSITY_LEVEL }}
       upload-build-artifacts-name: ${{ needs.build.outputs.upload-build-artifacts-name }}
       nuget-packages-output-folder: ${{ vars.NUGET_PACKAGES_FOLDER }}
-      environment: Integration
+      environment: "Integration"
 
   push:
     name: 🚀 Push to NuGet Feed
@@ -52,7 +52,7 @@ jobs:
       - name: 📦 Download all packed projects
         uses: actions/download-artifact@v4
         with:
-          pattern: nupkg-*
+          pattern: "*-nupkg"
           merge-multiple: true
           path: ${{ vars.NUGET_PACKAGES_FOLDER }}
 
