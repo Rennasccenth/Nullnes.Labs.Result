@@ -1,0 +1,114 @@
+name: Pack
+
+on:
+  workflow_call:
+    outputs:
+      upload-packed-artifacts-name:
+        description: Name used while uploading the packed artifacts, use it to download the artifacts
+        value: ${{ jobs.pack.outputs.upload-packed-artifacts-name }}
+    inputs:
+      dotnet-version:
+        required: true
+        type: string
+        default: 9.0.x
+        description: Defines the .NET version to be used for pack the projects
+      dotnet-configuration:
+        required: true
+        default: Release
+        type: string
+        description: Defines the Configuration of the pack command
+      upload-build-artifacts-name:
+        required: true
+        type: string
+        default: build-artifacts-name
+        description: The name of the artifacts upload step wheres a build workflow uploaded the build artifacts
+      nuget-packages-output-folder:
+        required: true
+        default: ./nupkgs
+        type: string
+      verbosity:
+        required: false
+        type: string
+        default: normal
+        description: Defines the verbosity level of the pack command
+      environment:
+        required: false
+        default: Integration
+        type: string
+        description: The environment of the running context, this defines the strategies related to version publish and naming
+
+jobs:
+  detect-projects:
+    name: 🔎 Detect projects to Pack
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-projects-matrix.outputs.matrix }}
+    steps:
+      - name: ✓ Shallow Checkout
+        uses: actions/checkout@v4
+
+      - name: ✅ Set projects matrix
+        id: set-projects-matrix
+        run: |
+          projects=$(find ./src -name '*.csproj' | jq --raw-input --slurp --compact-output 'split("\n") | map(select(length > 0))')
+          echo "matrix=$projects" >> $GITHUB_OUTPUT
+
+  pack:
+    name: 📦 Pack detected project
+    runs-on: ubuntu-latest
+    needs: detect-projects
+    outputs:
+      upload-packed-artifacts-name: ${{ steps.rand.outputs.name }}
+    strategy:
+      matrix:
+        project: ${{ fromJson(needs.detect-projects.outputs.matrix) }}
+    steps:
+      - name: ✓ Deep Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📦 Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.upload-build-artifacts-name }}
+          path: ./src
+      
+      - name: ⚙️ Setup .NET ️
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ inputs.dotnet-version }}
+
+      - name: 🗂️ Set version.json folder
+        id: version-folder
+        shell: bash
+        run: |
+          echo "${{ matrix.project }}"
+          PROJECT_PATH=$(dirname ${{ matrix.project }})
+          echo "version-file-path=$PROJECT_PATH" >> $GITHUB_OUTPUT
+
+      - name: 🔢 Get package version
+        id: nbgv
+        uses: dotnet/nbgv@v0.4.1
+        with: 
+          path: ${{ steps.version-folder.outputs.version-file-path }}
+
+      - name: 🎁 Pack Project
+        shell: bash
+        run: |
+          dotnet pack ${{ matrix.project }} \
+            --configuration ${{ inputs.dotnet-configuration }} \
+            --output ${{ inputs.nuget-packages-output-folder }} \
+            /p:Version=${{ steps.nbgv.outputs.NuGetPackageVersion }}
+
+      - name: 🫨 Generate Upload Name
+        id: upld
+        run: |
+          PROJECT_NAME=$(basename "$(dirname "${{ matrix.project }}")")
+          echo "name=$PROJECT_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: 📦 Upload packed project
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.nbgv.outputs.NuGetPackageVersion }}-${{ steps.upld.outputs.name }}-nupkg
+          path: ${{ inputs.nuget-packages-output-folder }}

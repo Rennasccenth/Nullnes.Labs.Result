@@ -1,22 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>netstandard2.1</TargetFramework>
-        <Nullable>enable</Nullable>
-        <LangVersion>default</LangVersion>
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>default</LangVersion>
 
-<!--    Package Configurations -->
-        <Version>0.0.1</Version>
-        <PackageId>Nullnes.Labs.Result.Abstractions</PackageId>
-        <Description>Simple abstractions for Nullnes.Labs.Result.* ecosystem. Might be used to extend it according 
-            to your personal needs.</Description>
-        <PackageProjectUrl>https://github.com/Rennasccenth/nullnes.result</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/Rennasccenth/nullnes.result</RepositoryUrl>
-        <RepositoryType>git</RepositoryType>
-        <Authors>Felipe Nunes</Authors>
-        <Company>Nullnes.Labs</Company>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageTags>Abstractions; Result; Railway Oriented Programming; ROP; Error Handling; Monadic;</PackageTags>
-    </PropertyGroup>
+    <!--    Package Configurations -->
+    <PackageId>Nullnes.Labs.Result.Abstractions</PackageId>
+    <Description>Simple abstractions for Nullnes.Labs.Result.* ecosystem. Might be used to extend it according 
+      to your personal needs.</Description>
+    <PackageProjectUrl>https://github.com/Rennasccenth/nullnes.result</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Rennasccenth/nullnes.result</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Authors>Felipe Nunes</Authors>
+    <Company>Nullnes.Labs</Company>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageTags>Abstractions; Result; Railway Oriented Programming; ROP; Error Handling; Monadic;</PackageTags>
+  </PropertyGroup>
 
 </Project>

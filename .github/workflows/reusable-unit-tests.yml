@@ -1,0 +1,59 @@
+name: Unit Tests
+run-name: Run Unit Tests
+
+on:
+  workflow_call: 
+    inputs:
+      dotnet-version:
+        required: true
+        type: string
+        default: 9.0.x
+        description: Defines the .NET version to be used for build the projects
+      dotnet-configuration:
+        required: false
+        default: Release
+        type: string
+        description: Defines the Configuration of the build command
+      verbosity:
+        required: false
+        type: string
+        default: normal
+        description: Defines the verbosity level of the build command
+      upload-build-artifacts-name:
+        required: true
+        type: string
+        default: build-artifacts-name
+        description: The name of the artifacts upload step wheres a build workflow uploaded the build artifacts
+      upload-test-build-artifacts-name:
+        required: true
+        type: string
+        default: test-build-artifacts-name
+        description: The name of the artifacts upload step wheres a build workflow uploaded the build artifacts
+
+jobs:
+  unit-tests:
+    name: 🧪 Run Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: ✓ Shallow Checkout
+        uses: actions/checkout@v4
+
+      - name: 📦 Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.upload-build-artifacts-name }}
+          path: ./src
+
+      - name: 📦 Download test build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.upload-test-build-artifacts-name }}
+          path: ./tests
+
+      - name: ⚙️ Setup .NET ️
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ inputs.dotnet-version }}
+
+      - name: 🧪 Run Unit Tests
+        run: dotnet test --no-build --configuration ${{ inputs.dotnet-configuration }} --verbosity ${{ inputs.verbosity }}

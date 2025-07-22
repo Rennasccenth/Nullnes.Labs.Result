@@ -1,0 +1,65 @@
+name: Publish to NuGet INT Environment
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build:
+    name: 🧱 Build entire solution
+    uses: Rennasccenth/Nullnes.Labs.Result/.github/workflows/reusable-build.yml@feature/publish-into-nuget
+    with:
+      dotnet-version: ${{ vars.DOTNET_VERSION }}
+      dotnet-configuration: ${{ vars.DOTNET_CONFIGURATION }}
+      verbosity: ${{ vars.VERBOSITY_LEVEL }}
+      should-include-tests-artifacts: true
+      upload-build-artifacts-name: "source-code-build-artifacts"
+      upload-test-build-artifacts-name: "test-code-build-artifacts"
+
+  tests:
+    name: 🧪 Tests
+    needs: build
+    uses: Rennasccenth/Nullnes.Labs.Result/.github/workflows/reusable-unit-tests.yml@feature/publish-into-nuget
+    with:
+      dotnet-version: ${{ vars.DOTNET_VERSION }}
+      dotnet-configuration: ${{ vars.DOTNET_CONFIGURATION }}
+      verbosity: ${{ vars.VERBOSITY_LEVEL }}
+      upload-build-artifacts-name: ${{ needs.build.outputs.upload-build-artifacts-name }}
+      upload-test-build-artifacts-name: ${{ needs.build.outputs.upload-test-build-artifacts-name }}
+
+  pack:
+    name: 📦 Pack
+    needs: [ build, tests ]
+    uses: Rennasccenth/Nullnes.Labs.Result/.github/workflows/reusable-pack.yml@feature/publish-into-nuget
+    with:
+      dotnet-version: ${{ vars.DOTNET_VERSION }}
+      dotnet-configuration: ${{ vars.DOTNET_CONFIGURATION }}
+      verbosity: ${{ vars.VERBOSITY_LEVEL }}
+      upload-build-artifacts-name: ${{ needs.build.outputs.upload-build-artifacts-name }}
+      nuget-packages-output-folder: ${{ vars.NUGET_PACKAGES_FOLDER }}
+      environment: "Integration"
+
+  push:
+    name: 🚀 Push to NuGet Feed
+    runs-on: ubuntu-latest
+    environment: "Integration"
+    needs: [build, tests, pack]
+    steps:
+      - name: ✓ Shallow Checkout
+        uses: actions/checkout@v4
+
+      - name: 📦 Download all packed projects
+        uses: actions/download-artifact@v4
+        with:
+          pattern: "*-nupkg"
+          merge-multiple: true
+          path: ${{ vars.NUGET_PACKAGES_FOLDER }}
+
+      - name: ⚙️ Setup .NET ️
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ vars.DOTNET_VERSION }}
+
+      - name: 🚀 Publish NuGet packages
+        run: dotnet nuget push "${{ vars.NUGET_PACKAGES_FOLDER }}/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source ${{ vars.NUGET_SOURCE_URL }} --skip-duplicate
