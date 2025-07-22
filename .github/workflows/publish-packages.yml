@@ -1,9 +1,11 @@
-name: Publish Entry
+name: Publish to NuGet INT Environment
 
 on:
   push:
     branches:
-      - feature/publish-into-nuget
+      - develop
+    tags:
+      - INT
 
 jobs:
   build:
@@ -43,7 +45,7 @@ jobs:
   push:
     name: 🚀 Push to NuGet Feed
     runs-on: ubuntu-latest
-    environment: Integration
+    environment: "Integration"
     needs: [build, tests, pack]
     steps:
       - name: ✓ Shallow Checkout
