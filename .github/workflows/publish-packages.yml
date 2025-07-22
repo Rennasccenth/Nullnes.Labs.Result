@@ -49,10 +49,10 @@ jobs:
       - name: ✓ Shallow Checkout
         uses: actions/checkout@v4
 
-      - name: 📦 Download all NuGet packages
+      - name: 📦 Download all packed projects
         uses: actions/download-artifact@v4
         with:
-          pattern: project-*
+          pattern: nupkg-*
           merge-multiple: true
           path: ${{ vars.NUGET_PACKAGES_FOLDER }}
 

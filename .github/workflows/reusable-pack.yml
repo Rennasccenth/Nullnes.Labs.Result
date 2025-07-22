@@ -123,5 +123,5 @@ jobs:
       - name: 📦 Upload packed projects
         uses: actions/upload-artifact@v4
         with:
-          name: project-${{ steps.upld.outputs.name }}
+          name: nupkg-${{ steps.upld.outputs.name }}
           path: ${{ inputs.nuget-packages-output-folder }}
