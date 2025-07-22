@@ -6,7 +6,7 @@
   <Folder Name="/Solution Items/Pipelines/">
     <File Path=".github/workflows/publish-packages.yml" />
   </Folder>
-  <Folder Name="/Solution Items/Pipelines/ReusableWorkflows">
+  <Folder Name="/Solution Items/Pipelines/ReusableWorkflows/">
     <File Path=".github/workflows/reusable-build.yml" />
     <File Path=".github/workflows/reusable-pack.yml" />
     <File Path=".github/workflows/reusable-unit-tests.yml" />
