@@ -131,7 +131,7 @@ public static class Result
     /// which will be wrapped into a <see cref="Result{TSuccess, TError}"/>.</param>
     /// <typeparam name="TSuccess">The success type.</typeparam>
     /// <typeparam name="TError">The error type, which must implement <see cref="IError"/>.</typeparam>
-    /// <returns>A failed <see cref="Result{TSuccess, TError}"/> instance.</returns>
+    /// <returns>A <see cref="Task{TResult}"/> that results in a failed <see cref="Result{TSuccess, TError}"/> instance.</returns>
     [Pure]
     public static async Task<Result<TSuccess, TError>> Failure<TSuccess, TError>(Task<TError> errorInstanceTask) 
         where TError : class, IError
