@@ -88,17 +88,52 @@ public static class Result
     /// Creates a successful <see cref="Result{TSuccess, TError}"/> instance.
     /// </summary>
     /// <param name="successData">Data representing the success.</param>
+    /// <typeparam name="TSuccess">The success type.</typeparam>
+    /// <typeparam name="TError">The error type, which must implement <see cref="IError"/>.</typeparam>
     /// <returns>A successful <see cref="Result{TSuccess, TError}"/> instance.</returns>
-    // [Pure]
-    public static Result<TSuccess, TError> Success<TSuccess, TError>(TSuccess successData) where TError : class, IError 
+    [Pure]
+    public static Result<TSuccess, TError> Success<TSuccess, TError>(TSuccess successData) 
+        where TError : class, IError 
         => new(successData);
+
+    /// <summary>
+    /// Creates a successful <see cref="Result{TSuccess, TError}"/> instance.
+    /// </summary>
+    /// <param name="successDataTask">
+    /// A task containing the success data, which will be wrapped into a <see cref="Result{TSuccess, TError}"/>.
+    /// </param>
+    /// <typeparam name="TSuccess">The success type.</typeparam>
+    /// <typeparam name="TError">The error type, which must implement <see cref="IError"/>.</typeparam>
+    /// <returns>
+    /// A <see cref="Task{TResult}"/> that results in a successful <see cref="Result{TSuccess, TError}"/> instance.
+    /// </returns>
+    [Pure]
+    public static async Task<Result<TSuccess, TError>> Success<TSuccess, TError>(Task<TSuccess> successDataTask)
+        where TError : class, IError
+        => Result.Success<TSuccess, TError>(await successDataTask);
 
     /// <summary>
     /// Creates a failed <see cref="Result{TSuccess, TError}"/> instance.
     /// </summary>
     /// <param name="errorInstance">Data representing the error.</param>
+    /// <typeparam name="TSuccess">The success type.</typeparam>
+    /// <typeparam name="TError">The error type, which must implement <see cref="IError"/>.</typeparam>
     /// <returns>A failed <see cref="Result{TSuccess, TError}"/> instance.</returns>
     [Pure]
-    public static Result<TSuccess, TError> Failure<TSuccess, TError>(TError errorInstance) where TError : class, IError
+    public static Result<TSuccess, TError> Failure<TSuccess, TError>(TError errorInstance) 
+        where TError : class, IError
         => new(errorInstance);
+
+    /// <summary>
+    /// Creates a failed <see cref="Result{TSuccess, TError}"/> instance.
+    /// </summary>
+    /// <param name="errorInstanceTask">A task containing the error data,
+    /// which will be wrapped into a <see cref="Result{TSuccess, TError}"/>.</param>
+    /// <typeparam name="TSuccess">The success type.</typeparam>
+    /// <typeparam name="TError">The error type, which must implement <see cref="IError"/>.</typeparam>
+    /// <returns>A failed <see cref="Result{TSuccess, TError}"/> instance.</returns>
+    [Pure]
+    public static async Task<Result<TSuccess, TError>> Failure<TSuccess, TError>(Task<TError> errorInstanceTask) 
+        where TError : class, IError
+        => new(await errorInstanceTask);
 }
