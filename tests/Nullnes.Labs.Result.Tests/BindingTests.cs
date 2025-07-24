@@ -1,11 +1,11 @@
-using AwesomeAssertions;
 using Nullnes.Labs.Result.Tests.TestHelpers;
-using Xunit.Abstractions;
 
 namespace Nullnes.Labs.Result.Tests;
 
 public sealed class BindingTests(ITestOutputHelper testOutputHelper)
 {
+    private readonly Faker _faker = new();
+
     [InlineData(1)]
     [InlineData(10)]
     [InlineData(0)]
@@ -19,8 +19,8 @@ public sealed class BindingTests(ITestOutputHelper testOutputHelper)
         Result<int, TestError> successfulResult = value;
 
         // Act
-        Result<string, TestError> finalResult = successfulResult.Map(
-            successValue => successValue.ToString());
+        Result<string, TestError> finalResult = successfulResult
+            .Bind(successValue => Result.Success<string, TestError>(successValue.ToString()));
 
         // Assert
         string result = finalResult.Match(
@@ -40,12 +40,12 @@ public sealed class BindingTests(ITestOutputHelper testOutputHelper)
     public void Should_Bind_Error_When_Result_Is_Failure(int value)
     {
         // Arrange
-        TestError expectedError = new TestError($"Error occurred with value {value}");
+        TestError expectedError = new TestError($"Error occurred with while using value {value}");
         Result<int, TestError> failureResult = expectedError;
 
         // Act
-        Result<string, TestError> finalResult = failureResult.Map(
-            successValue => successValue.ToString());
+        Result<string, TestError> finalResult = failureResult
+            .Bind(successValue => Result.Success<string, TestError>(successValue.ToString()));
 
         // Assert
         string result = finalResult.Match(
@@ -69,7 +69,7 @@ public sealed class BindingTests(ITestOutputHelper testOutputHelper)
         int expectedValue = MultiplyBy10(startingValue);
 
         Result<int, TestError> MultiplyBy10Wrapped(int input) => MultiplyBy10(input);
-        int MultiplyBy10(int input) => input + 10;
+        int MultiplyBy10(int input) => input * 10;
 
         // Act
         Result<int, TestError> boundResult = successfulResult.Bind(MultiplyBy10Wrapped);
@@ -115,13 +115,10 @@ public sealed class BindingTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         Result<int, TestError> successfulResult = new TestError("This is an Error and not a Success!");
-        int expectedValueInErrorCase = 0;
-
-        Result<int, TestError> MultiplyBy10Wrapped(int input) => MultiplyBy10(input);
-        int MultiplyBy10(int someParam) => throw new InvalidOperationException($"This exception should not be thrown. {someParam}");
+        int expectedValueInErrorCase = _faker.Random.Int();
 
         // Act
-        Result<int, TestError> boundResult = successfulResult.Bind(MultiplyBy10Wrapped);
+        Result<int, TestError> boundResult = successfulResult.Bind(MultiplyBy10ThatThrowsException);
 
         int finalResult = boundResult.Match(
             onSuccess: successResult => successResult,
@@ -130,6 +127,13 @@ public sealed class BindingTests(ITestOutputHelper testOutputHelper)
         // Assert
         finalResult.Should()
             .Be(expectedValueInErrorCase, "the error result should have been returned.");
+
+        static Result<int, TestError> MultiplyBy10ThatThrowsException(int input)
+        {
+            ThrowsException();
+            return input * 10;
+        }
+        static void ThrowsException() => throw new InvalidOperationException($"This exception should not be thrown.");
     }
 
     [Trait("Category", "Binding")]
@@ -138,13 +142,10 @@ public sealed class BindingTests(ITestOutputHelper testOutputHelper)
     {
         // Arrange
         Result<int, TestError> successfulResult = new TestError("This is an Error and not a Success!");
-        int expectedValueInErrorCase = 0;
-
-        Task<Result<int, TestError>> MultiplyBy10Async(int input) => Task.FromResult<Result<int, TestError>>(MultiplyBy10(input));
-        int MultiplyBy10(int someParam) => throw new InvalidOperationException($"This exception should not be thrown. {someParam}");
+        int expectedValueInErrorCase = _faker.Random.Int();
 
         // Act
-        Result<int, TestError> boundResult = await successfulResult.Bind(MultiplyBy10Async);
+        Result<int, TestError> boundResult = await successfulResult.Bind(MultiplyBy10AsyncThatThrowsException);
 
         int finalResult = boundResult.Match(
             onSuccess: successResult => successResult,
@@ -153,6 +154,13 @@ public sealed class BindingTests(ITestOutputHelper testOutputHelper)
         // Assert
         finalResult.Should()
             .Be(expectedValueInErrorCase, "the error result should have been returned.");
+
+        static Task<Result<int, TestError>> MultiplyBy10AsyncThatThrowsException(int input)
+        {
+            ThrowsException();
+            return Task.FromResult<Result<int, TestError>>(input * 10);
+        }
+        static void ThrowsException() => throw new InvalidOperationException($"This exception should not be thrown.");
     }
 
     [InlineData(1)]
@@ -170,7 +178,8 @@ public sealed class BindingTests(ITestOutputHelper testOutputHelper)
         int MultiplyBy10(int val) => val * 10;
 
         // Act
-        Result<int, TestError> boundResult = await asynchronousFailedResult.Map(x => MultiplyBy10(x));
+        Result<int, TestError> boundResult = await asynchronousFailedResult
+            .Bind(x => Result.Success<int, TestError>(MultiplyBy10(x)));
 
         string finalResult = boundResult.Match(
             onSuccess: successResult => successResult.ToString(),
@@ -196,8 +205,8 @@ public sealed class BindingTests(ITestOutputHelper testOutputHelper)
         int MultiplyBy10(int val) => val * 10;
 
         // Act
-        var boundResult = await asynchronousSuccessfulResult
-            .Map(async x => await Task.FromResult(MultiplyBy10(x)));
+        Result<int, TestError> boundResult = await asynchronousSuccessfulResult
+            .Bind(x => Result.Success<int, TestError>(Task.FromResult(MultiplyBy10(x))));
 
         string finalResult = boundResult.Match(
             onSuccess: successResult => successResult.ToString(),
