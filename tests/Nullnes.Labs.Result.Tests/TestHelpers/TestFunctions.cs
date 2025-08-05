@@ -9,6 +9,8 @@ internal static class TestFunctions
 {
     internal static int Double(int input) => input * 2; 
     internal static Task<int> DoubleAsync(int input) => Task.FromResult(Double(input));
+    internal static int SubtractOne(int input) => input - 1;
+    internal static Task<int> SubtractOneAsync(int input) => Task.FromResult(SubtractOne(input));
     internal static void ThrowsDefaultException(Exception? exception = null, [CallerMemberName] string callerMethodName = "") => throw exception ?? throw GetDefaultException(callerMethodName);
     internal static NotSupportedException GetDefaultException([CallerMemberName] string callerMethodName = "") => new($"{callerMethodName} threw an exception");
 
