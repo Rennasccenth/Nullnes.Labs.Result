@@ -1,4 +1,3 @@
-using AwesomeAssertions;
 using Nullnes.Labs.Result.Tests.TestHelpers;
 
 namespace Nullnes.Labs.Result.Tests;
@@ -11,30 +10,26 @@ public sealed class CompositionTests
     [InlineData(-1)]
     [InlineData(-500)]
     [Trait("Category", "Composition")]
-    [Theory(DisplayName = "Composition: Should chain multiple successful operations")]
-    public void Should_Chain_Multiple_Successful_Operations(int startValue)
+    [Theory(DisplayName = "Composition: Should chain multiple Successful Synchronous operations")]
+    public void Should_Chain_Multiple_Successful_Synchronous_Operations(int startValue)
     {
         // Arrange
         Result<int, TestError> initialResult = startValue;
 
         // Act
         var finalResult = initialResult
-            .Map(AddOne)
-            .Bind(MultiplyByTwoAsResult)
-            .Map(SubtractThree);
+            .Map(TestFunctions.Double) // x2
+            .Bind(TestFunctions.SimulateSuccess.DoubleResult) // x4
+            .Map(TestFunctions.SubtractOne); // (x4) - 1
 
-        string resultValue = finalResult.Match(
-            onSuccess: value => value.ToString(),
-            onError: err => err.Message.ToString());
+        string unwrappedValue = finalResult
+            .Match(
+                onSuccess: value => value.ToString(),
+                onError: err => err.Message.ToString());
 
         // Assert
-        string expected = SubtractThree(MultiplyByTwo(AddOne(startValue))).ToString();
-        resultValue.Should().Be(expected, "all operations should be applied in sequence");
-
-        static int AddOne(int x) => x + 1;
-        static int MultiplyByTwo(int x) => x * 2;
-        static Result<int, TestError> MultiplyByTwoAsResult(int x) => MultiplyByTwo(x);
-        static int SubtractThree(int x) => x - 3;
+        int expectedNumber = TestFunctions.SubtractOne(TestFunctions.Double(TestFunctions.Double(startValue)));
+        unwrappedValue.Should().Be(expectedNumber.ToString(), "all operations should be applied in sequence");
     }
 
     [InlineData(1)]
@@ -43,7 +38,7 @@ public sealed class CompositionTests
     [InlineData(-1)]
     [InlineData(-500)]
     [Trait("Category", "Composition")]
-    [Theory(DisplayName = "Composition: Should compose sync and async operations")]
+    [Theory(DisplayName = "Composition: Should compose Sync and Async operations")]
     public async Task Should_Compose_Sync_And_Async_Operations(int startValue)
     {
         // Arrange
@@ -51,20 +46,20 @@ public sealed class CompositionTests
 
         // Act
         var finalResult = await initialResult
-            .Map(AddOne)
-            .Bind(async x => await Task.FromResult<Result<int, TestError>>(MultiplyByTwo(x)))
-            .Map(SubtractThree);
+            .Map(TestFunctions.Double) // x2 
+            .Bind(TestFunctions.SimulateSuccess.DoubleResultAsync) // x4
+            .Map(TestFunctions.SubtractOneAsync); // (x4) - 1
 
-        string resultValue = finalResult.Match(
+        string unwrappedValue = finalResult.Match(
             onSuccess: value => value.ToString(),
             onError: err => err.Message.ToString());
 
         // Assert
-        string expected = SubtractThree(MultiplyByTwo(AddOne(startValue))).ToString();
-        resultValue.Should().Be(expected, "operations should be composed regardless of sync/async nature");
+        int expectedNumber = await TestFunctions
+            .SubtractOneAsync(await TestFunctions
+                .DoubleAsync(await TestFunctions
+                    .DoubleAsync(startValue)));
 
-        static int AddOne(int x) => x + 1;
-        static int MultiplyByTwo(int x) => x * 2;
-        static int SubtractThree(int x) => x - 3;
+        unwrappedValue.Should().Be(expectedNumber.ToString(), "operations should be composed regardless of Sync or Async nature");
     }
 } 
