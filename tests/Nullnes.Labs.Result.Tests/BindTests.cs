@@ -24,26 +24,7 @@ public sealed class BindTests
         _failureResultAsync = Task.FromResult(_failureResult);
     }
 
-    [Fact(DisplayName = "Binding: Should propagate error through bind operation")]
-    public void Should_Bind_Error_When_Result_Is_Failure()
-    {
-        // Arrange
-        TestError secondError = new("This error should never happen, because bind should preserve the previous error.");
-
-        // Act
-        Result<int, TestError> finalResult = TestFunctions.SimulateSuccess.DoubleResult(_randomInteger) // Synchronously Succeed
-            .Bind(doubledValue => TestFunctions.SimulateFailure.DoubleResult(doubledValue)) // Synchronously Fails
-            .Bind(quadrupledValue => secondError); // Synchronously called but is not invoked
-
-        // Assert
-        string resolvedMessage = finalResult.Match(
-            onSuccess: _ => "Success", 
-            onError: error => error.Message);
-
-        resolvedMessage.Should().Be(TestFunctions.SimulateFailure.DefaultError.Message, "bind should preserve the first error message through chain");
-    }
-
-    [Fact(DisplayName = "Binding: Should execute synchronous binding function over synchronous successful result")]
+    [Fact(DisplayName = "Binding: Should execute Synchronous binding function over Synchronous SUCCESSFUL result")]
     public void Should_Bind_Next_Sync_Func_On_Sync_Success_Result()
     {
         // Act
@@ -59,7 +40,7 @@ public sealed class BindTests
         finalResult.Should().Be(_randomInteger * 2 * 2, "the binding function should be executed over the previous result.");
     }
 
-    [Fact(DisplayName = "Binding: Should execute asynchronous binding function over synchronous successful result")]
+    [Fact(DisplayName = "Binding: Should execute Asynchronous binding function over Synchronous SUCCESSFUL result")]
     public async Task Should_Bind_Next_Async_Func_On_Sync_Success_Result()
     {
         // Act
@@ -75,11 +56,11 @@ public sealed class BindTests
         finalResult.Should().Be(_randomInteger * 2 * 2, "the binding function should be executed over the previous result.");
     }
 
-    [Fact(DisplayName = "Binding: Should not execute synchronous binding function over synchronous failed result")]
+    [Fact(DisplayName = "Binding: Should not execute Synchronous binding function over Synchronous FAILED result")]
     public void Should_Not_Bind_Next_Sync_Func_On_Failure_Result()
     {
         // Act
-        Result<int, TestError> boundResult = _failureResult // Synchronously Failed
+        Result<int, TestError> boundResult = _failureResult // Synchronously failed
             .Bind(integerNumber => 
             {
                 TestFunctions.ThrowsDefaultException(); // If the previously chained bind works as intended,
@@ -98,11 +79,11 @@ public sealed class BindTests
             .Be(TestFunctions.SimulateFailure.DefaultError.Message, "the first error should have been returned.");
     }
 
-    [Fact(DisplayName = "Binding: Should not execute asynchronous binding function over synchronous failed result")]
+    [Fact(DisplayName = "Binding: Should not execute Asynchronous binding function over Synchronous FAILED result")]
     public async Task Should_Not_Bind_Next_Async_Func_On_Sync_Failure_Result()
     {
         // Act
-        Result<int, TestError> boundResult = await _failureResult // Synchronously Failed
+        Result<int, TestError> boundResult = await _failureResult // Synchronously failed
             .Bind(integerNumber =>
             {
                 TestFunctions.ThrowsDefaultException(); // If the previously chained bind works as intended,
@@ -119,7 +100,7 @@ public sealed class BindTests
             .Be(TestFunctions.SimulateFailure.DefaultError.Message, "the first error should have been returned.");
     }
 
-    [Fact(DisplayName = "Binding: Should execute synchronous binding function over asynchronous successful result")]
+    [Fact(DisplayName = "Binding: Should execute Synchronous binding function over Asynchronous SUCCESSFUL result")]
     public async Task Should_Bind_Next_Sync_Func_On_Async_Success_Result()
     {
         // Act
@@ -135,7 +116,7 @@ public sealed class BindTests
             .Be((_randomInteger * 2).ToString(), "the binding function should be executed over the previous result.");
     }
 
-    [Fact(DisplayName = "Binding: Should execute asynchronous binding function over asynchronous successful result")]
+    [Fact(DisplayName = "Binding: Should execute Asynchronous binding function over Asynchronous SUCCESSFUL result")]
     public async Task Should_Bind_Next_Async_Func_On_Async_Success_Result()
     {
         // Act
@@ -151,7 +132,7 @@ public sealed class BindTests
             .Be((_randomInteger * 2).ToString(), "the binding function should be executed over the previous result.");
     }
 
-    [Fact(DisplayName = "Binding: Should not execute asynchronous binding function over asynchronous failed result")]
+    [Fact(DisplayName = "Binding: Should not execute Asynchronous binding function over Asynchronous FAILED result")]
     public async Task Should_Not_Bind_Next_Async_Func_On_Async_Failure_Result()
     {
         // Act
@@ -172,7 +153,7 @@ public sealed class BindTests
             .Be(TestFunctions.SimulateFailure.DefaultError.Message, "the first error should have been returned.");
     }
 
-    [Fact(DisplayName = "Binding: Should not execute synchronous binding function over asynchronous failed result")]
+    [Fact(DisplayName = "Binding: Should not execute Synchronous binding function over Asynchronous FAILED result")]
     public async Task Should_Not_Bind_Next_Sync_Func_On_Async_Failure_Result()
     {
         // Act
@@ -191,5 +172,81 @@ public sealed class BindTests
         // Assert
         finalResult.Should()
             .Be(TestFunctions.SimulateFailure.DefaultError.Message, "the first error should have been returned.");
+    }
+    
+    [Fact(DisplayName = "Binding: Should propagate Synchronous error over Synchronous SUCCESSFUL result through bind operation")]
+    public void Should_Bind_Error_When_Result_Is_Failure_Over_Synchronous_Successful_Result()
+    {
+        // Arrange
+        TestError secondError = new("This error should never happen, because bind should preserve the previous error.");
+
+        // Act
+        Result<int, TestError> finalResult = _successfulResult // Synchronously Succeed
+            .Bind(number => TestFunctions.SimulateFailure.DoubleResult(number)) // Synchronously Fails
+            .Bind(_ => secondError); // Synchronously called but is not invoked
+
+        // Assert
+        string resolvedMessage = finalResult.Match(
+            onSuccess: _ => "Success", 
+            onError: error => error.Message);
+
+        resolvedMessage.Should().Be(TestFunctions.SimulateFailure.DefaultError.Message, "bind should preserve the first error message through chain");
+    }
+
+    [Fact(DisplayName = "Binding: Should propagate Synchronous error over Asynchronous SUCCESSFUL result through bind operation")]
+    public async Task Should_Bind_Error_When_Result_Is_Failure_Over_Asynchronous_Successful_Result()
+    {
+        // Arrange
+        TestError secondError = new("This error should never happen, because bind should preserve the previous error.");
+
+        // Act
+        Result<int, TestError> finalResult = await _successfulAsyncResult // Asynchronously Succeed
+            .Bind(number => TestFunctions.SimulateFailure.DoubleResult(number)) // Synchronously Fails
+            .Bind(_ => Result.Failure<int, TestError>(secondError)); // Synchronously called but is not invoked
+
+        // Assert
+        string resolvedMessage = finalResult.Match(
+            onSuccess: _ => "Success", 
+            onError: error => error.Message);
+
+        resolvedMessage.Should().Be(TestFunctions.SimulateFailure.DefaultError.Message, "bind should preserve the first error message through chain");
+    }
+    
+    [Fact(DisplayName = "Binding: Should propagate Asynchronous error over Synchronous SUCCESSFUL result through bind operation")]
+    public async Task Should_Bind_Async_Error_When_Result_Is_Failure_Over_Synchronous_Successful_Result()
+    {
+        // Arrange
+        TestError secondError = new("This error should never happen, because bind should preserve the previous error.");
+
+        // Act
+        Result<int, TestError> finalResult = await _successfulResult // Synchronously Succeed
+            .Bind(number => TestFunctions.SimulateFailure.DoubleResultAsync(number)) // Asynchronously Fails
+            .Bind(_ => Result.Failure<int, TestError>(secondError)); // Synchronously called but is not invoked
+
+        // Assert
+        string resolvedMessage = finalResult.Match(
+            onSuccess: _ => "Success", 
+            onError: error => error.Message);
+
+        resolvedMessage.Should().Be(TestFunctions.SimulateFailure.DefaultError.Message, "bind should preserve the first error message through chain");
+    }
+
+    [Fact(DisplayName = "Binding: Should propagate Asynchronous error over Asynchronous SUCCESSFUL result through bind operation")]
+    public async Task Should_Bind_Async_Error_When_Result_Is_Failure_Over_Asynchronous_Successful_Result()
+    {
+        // Arrange
+        TestError secondError = new("This error should never happen, because bind should preserve the previous error.");
+
+        // Act
+        Result<int, TestError> finalResult = await _successfulAsyncResult // Asynchronously Succeed
+            .Bind(number => TestFunctions.SimulateFailure.DoubleResultAsync(number)) // Asynchronously Fails
+            .Bind(_ => Result.Failure<int, TestError>(secondError)); // Synchronously called but is not invoked
+
+        // Assert
+        string resolvedMessage = finalResult.Match(
+            onSuccess: _ => "Success", 
+            onError: error => error.Message);
+
+        resolvedMessage.Should().Be(TestFunctions.SimulateFailure.DefaultError.Message, "bind should preserve the first error message through chain");
     }
 }
