@@ -9,18 +9,18 @@ public sealed class TypeSafetyTests
     public void Should_Implicitly_Convert_Value_To_Result()
     {
         // Arrange
-        int value = 42;
+        const int value = 42;
 
         // Act
         Result<int, TestError> result = value;
 
         // Assert
-        bool resultValue = result
+        var act = () => result
             .Match(
-                onSuccess: _ => true,
-                onError: _ => false);
+                onSuccess: number => number,
+                onError: TestFunctions.SimulateException.ThrowsAsInt);
 
-        resultValue.Should().BeTrue(because: "value should be implicitly converted to successful result");
+        act.Should().NotThrow(because: "the value should be converted to a non Error Type value");
     }
 
     [Fact(DisplayName = "TypeSafety: A Failure Result must be created given a Error Type value")]
@@ -33,11 +33,12 @@ public sealed class TypeSafetyTests
         // Act
         Result<dynamic, TestError> result = error;
 
-        string resultValue = result.Match(
-            onSuccess: obj => obj.ToString(),
-            onError: err => err.Message);
+        var act = () => result
+            .Match(
+                onSuccess: TestFunctions.SimulateException.ThrowsAsString,
+                onError: err => err.Message);
 
         // Assert
-        resultValue.Should().Be(error.Message, because: "error should be implicitly converted to failed result");
+        act.Should().NotThrow(because: "error should be implicitly converted to failed result");
     }
 }

@@ -20,7 +20,7 @@ public sealed class BindTests
         _successfulResult = Result.Success<int, TestError>(_randomInteger);
         _successfulAsyncResult = Task.FromResult(_successfulResult);
 
-        _failureResult = Result.Failure<int, TestError>(TestFunctions.SimulateFailure.DefaultError);
+        _failureResult = Result.Failure<int, TestError>(TestFunctions.DefaultError);
         _failureResultAsync = Task.FromResult(_failureResult);
     }
 
@@ -34,7 +34,7 @@ public sealed class BindTests
 
         int finalResult = boundResult.Match(
             onSuccess: successResult => successResult,
-            onError: _ => TestFunctions.Double(_randomInteger));
+            onError: TestFunctions.SimulateException.ThrowsAsInt);
 
         // Assert
         finalResult.Should().Be(_randomInteger * 2 * 2, "the binding function should be executed over the previous result.");
@@ -50,7 +50,7 @@ public sealed class BindTests
 
         int finalResult = boundResult.Match(
             onSuccess: successResult => successResult,
-            onError: _ => 0);
+            onError: TestFunctions.SimulateException.ThrowsAsInt);
 
         // Assert
         finalResult.Should().Be(_randomInteger * 2 * 2, "the binding function should be executed over the previous result.");
@@ -61,12 +61,7 @@ public sealed class BindTests
     {
         // Act
         Result<int, TestError> boundResult = _failureResult // Synchronously failed
-            .Bind(integerNumber => 
-            {
-                TestFunctions.ThrowsDefaultException(); // If the previously chained bind works as intended,
-                                                        // this should never be thrown 
-                return TestFunctions.SimulateSuccess.DoubleResult(integerNumber); 
-            });
+            .Bind(integerNumber => ExceptionThrower.AsIntResult(integerNumber));
 
         string finalResult = boundResult.Match(
             onSuccess: successResult => successResult.ToString(),
@@ -76,7 +71,7 @@ public sealed class BindTests
         using AssertionScope _ = new();
 
         finalResult.Should()
-            .Be(TestFunctions.SimulateFailure.DefaultError.Message, "the first error should have been returned.");
+            .Be(TestFunctions.DefaultError.Message, "the first error should have been returned.");
     }
 
     [Fact(DisplayName = "Binding: Should not execute Asynchronous binding function over Synchronous FAILED result")]
@@ -84,12 +79,7 @@ public sealed class BindTests
     {
         // Act
         Result<int, TestError> boundResult = await _failureResult // Synchronously failed
-            .Bind(integerNumber =>
-            {
-                TestFunctions.ThrowsDefaultException(); // If the previously chained bind works as intended,
-                                                        // this should never be thrown 
-                return TestFunctions.SimulateSuccess.DoubleResultAsync(integerNumber);
-            });
+            .Bind(integerNumber => ExceptionThrower.AsIntResultAsync(integerNumber));
 
         string finalResult = boundResult.Match(
             onSuccess: successResult => successResult.ToString(),
@@ -97,7 +87,7 @@ public sealed class BindTests
 
         // Assert
         finalResult.Should()
-            .Be(TestFunctions.SimulateFailure.DefaultError.Message, "the first error should have been returned.");
+            .Be(TestFunctions.DefaultError.Message, "the first error should have been returned.");
     }
 
     [Fact(DisplayName = "Binding: Should execute Synchronous binding function over Asynchronous SUCCESSFUL result")]
@@ -109,7 +99,7 @@ public sealed class BindTests
 
         string finalResult = boundResult.Match(
             onSuccess: successResult => successResult.ToString(),
-            onError: _ => throw TestFunctions.GetDefaultException());
+            onError: TestFunctions.SimulateException.ThrowsAsString);
 
         // Assert
         finalResult.Should()
@@ -125,7 +115,7 @@ public sealed class BindTests
 
         string finalResult = boundResult.Match(
             onSuccess: successResult => successResult.ToString(),
-            onError: _ => throw TestFunctions.GetDefaultException());
+            onError: TestFunctions.SimulateException.ThrowsAsString);
 
         // Assert
         finalResult.Should()
@@ -135,14 +125,9 @@ public sealed class BindTests
     [Fact(DisplayName = "Binding: Should not execute Asynchronous binding function over Asynchronous FAILED result")]
     public async Task Should_Not_Bind_Next_Async_Func_On_Async_Failure_Result()
     {
-        // Act
+        // Arrange & Act
         Result<int, TestError> boundResult = await _failureResultAsync // Asynchronous Fails
-            .Bind(integerNumber =>
-            {
-                TestFunctions.ThrowsDefaultException(); // If the previously chained bind works as intended,
-                                                        // this should never be thrown 
-                return TestFunctions.SimulateSuccess.DoubleResultAsync(integerNumber);
-            });
+            .Bind(number => ExceptionThrower.AsIntResultAsync(number)); // Asynchronously called but is not invoked
 
         string finalResult = boundResult.Match(
             onSuccess: successResult => successResult.ToString(),
@@ -150,20 +135,15 @@ public sealed class BindTests
 
         // Assert
         finalResult.Should()
-            .Be(TestFunctions.SimulateFailure.DefaultError.Message, "the first error should have been returned.");
+            .Be(TestFunctions.DefaultError.Message, "the first error should have been returned.");
     }
 
     [Fact(DisplayName = "Binding: Should not execute Synchronous binding function over Asynchronous FAILED result")]
     public async Task Should_Not_Bind_Next_Sync_Func_On_Async_Failure_Result()
     {
-        // Act
+        // Arrange & Act
         Result<int, TestError> boundResult = await _failureResultAsync // Asynchronous Fails
-            .Bind(integerNumber =>
-            {
-                TestFunctions.ThrowsDefaultException(); // If the previously chained bind works as intended,
-                                                        // this should never be thrown 
-                return TestFunctions.SimulateSuccess.DoubleResult(integerNumber);
-            });
+            .Bind(number => ExceptionThrower.AsIntResult(number)); // Synchronously called but is not invoked
 
         string finalResult = boundResult.Match(
             onSuccess: successResult => successResult.ToString(),
@@ -171,82 +151,80 @@ public sealed class BindTests
 
         // Assert
         finalResult.Should()
-            .Be(TestFunctions.SimulateFailure.DefaultError.Message, "the first error should have been returned.");
+            .Be(TestFunctions.DefaultError.Message, "the first error should have been returned.");
     }
     
     [Fact(DisplayName = "Binding: Should propagate Synchronous error over Synchronous SUCCESSFUL result through bind operation")]
     public void Should_Bind_Error_When_Result_Is_Failure_Over_Synchronous_Successful_Result()
     {
-        // Arrange
-        TestError secondError = new("This error should never happen, because bind should preserve the previous error.");
-
-        // Act
+        // Arrange & Act
         Result<int, TestError> finalResult = _successfulResult // Synchronously Succeed
             .Bind(number => TestFunctions.SimulateFailure.DoubleResult(number)) // Synchronously Fails
-            .Bind(_ => secondError); // Synchronously called but is not invoked
+            .Bind(number => ExceptionThrower.AsIntResult(number)); // Synchronously called but is not invoked
 
         // Assert
         string resolvedMessage = finalResult.Match(
             onSuccess: _ => "Success", 
             onError: error => error.Message);
 
-        resolvedMessage.Should().Be(TestFunctions.SimulateFailure.DefaultError.Message, "bind should preserve the first error message through chain");
+        resolvedMessage.Should().Be(TestFunctions.DefaultError.Message, "bind should preserve the first error message through chain");
     }
 
     [Fact(DisplayName = "Binding: Should propagate Synchronous error over Asynchronous SUCCESSFUL result through bind operation")]
     public async Task Should_Bind_Error_When_Result_Is_Failure_Over_Asynchronous_Successful_Result()
     {
-        // Arrange
-        TestError secondError = new("This error should never happen, because bind should preserve the previous error.");
-
-        // Act
+        // Arrange & Act
         Result<int, TestError> finalResult = await _successfulAsyncResult // Asynchronously Succeed
             .Bind(number => TestFunctions.SimulateFailure.DoubleResult(number)) // Synchronously Fails
-            .Bind(_ => Result.Failure<int, TestError>(secondError)); // Synchronously called but is not invoked
+            .Bind(number => ExceptionThrower.AsIntResult(number)); // Synchronously called but is not invoked
 
         // Assert
         string resolvedMessage = finalResult.Match(
             onSuccess: _ => "Success", 
             onError: error => error.Message);
 
-        resolvedMessage.Should().Be(TestFunctions.SimulateFailure.DefaultError.Message, "bind should preserve the first error message through chain");
+        resolvedMessage.Should().Be(TestFunctions.DefaultError.Message, "bind should preserve the first error message through chain");
     }
     
     [Fact(DisplayName = "Binding: Should propagate Asynchronous error over Synchronous SUCCESSFUL result through bind operation")]
     public async Task Should_Bind_Async_Error_When_Result_Is_Failure_Over_Synchronous_Successful_Result()
     {
-        // Arrange
-        TestError secondError = new("This error should never happen, because bind should preserve the previous error.");
-
-        // Act
+        // Arrange & Act
         Result<int, TestError> finalResult = await _successfulResult // Synchronously Succeed
             .Bind(number => TestFunctions.SimulateFailure.DoubleResultAsync(number)) // Asynchronously Fails
-            .Bind(_ => Result.Failure<int, TestError>(secondError)); // Synchronously called but is not invoked
+            .Bind(number => ExceptionThrower.AsIntResult(number)); // Synchronously called but is not invoked
 
         // Assert
         string resolvedMessage = finalResult.Match(
             onSuccess: _ => "Success", 
             onError: error => error.Message);
 
-        resolvedMessage.Should().Be(TestFunctions.SimulateFailure.DefaultError.Message, "bind should preserve the first error message through chain");
+        resolvedMessage.Should().Be(TestFunctions.DefaultError.Message, "bind should preserve the first error message through chain");
     }
 
     [Fact(DisplayName = "Binding: Should propagate Asynchronous error over Asynchronous SUCCESSFUL result through bind operation")]
     public async Task Should_Bind_Async_Error_When_Result_Is_Failure_Over_Asynchronous_Successful_Result()
     {
-        // Arrange
-        TestError secondError = new("This error should never happen, because bind should preserve the previous error.");
-
-        // Act
+        // Arrange & Act
         Result<int, TestError> finalResult = await _successfulAsyncResult // Asynchronously Succeed
             .Bind(number => TestFunctions.SimulateFailure.DoubleResultAsync(number)) // Asynchronously Fails
-            .Bind(_ => Result.Failure<int, TestError>(secondError)); // Synchronously called but is not invoked
+            .Bind(number => ExceptionThrower.AsIntResult(number)); // Synchronously called but is not invoked
 
         // Assert
         string resolvedMessage = finalResult.Match(
             onSuccess: _ => "Success", 
             onError: error => error.Message);
 
-        resolvedMessage.Should().Be(TestFunctions.SimulateFailure.DefaultError.Message, "bind should preserve the first error message through chain");
+        resolvedMessage.Should().Be(TestFunctions.DefaultError.Message, "bind should preserve the first error message through chain");
+    }
+
+    private static class ExceptionThrower
+    {
+        public static Result<int, TestError> AsIntResult(object value) =>
+            Result.Success<int, TestError>(
+                TestFunctions.SimulateException.ThrowsAsInt(value));
+
+        public static Task<Result<int, TestError>> AsIntResultAsync(object value) =>
+            Task.FromResult(AsIntResult(value));
     }
 }

@@ -16,7 +16,7 @@ public sealed class EnsureTests
         _successfulResult = Result.Success<int, TestError>(_faker.Random.Int(-999_999, 999_999));
         _successfulAsyncResult = Task.FromResult(_successfulResult);
 
-        _failureResult = Result.Failure<int, TestError>(TestFunctions.SimulateFailure.DefaultError);
+        _failureResult = Result.Failure<int, TestError>(TestFunctions.DefaultError);
         _failureResultAsync = Task.FromResult(_failureResult);
     }
 
